@@ -18,14 +18,17 @@ public final class DataVisualizer extends ApplicationTemplate {
 
     @Override
     public void start(Stage primaryStage) {
-        dialogsAudit(primaryStage);
-        if (propertyAudit())
-            userInterfaceAudit(primaryStage);
+        primaryStage.show();
+        dialogsAudit(primaryStage); //sets up error messages for the stage
+        if (propertyAudit()) {// propertyAudit() returns true explore method why does this return true
+            System.out.println("ran");
+            userInterfaceAudit(primaryStage);//main error comes from here NEXT STEP
+        }
     }
 
     @Override
     protected boolean propertyAudit() {
-        boolean failed = manager == null || !(loadProperties(PROPERTIES_XML) && loadProperties(WORKSPACE_PROPERTIES_XML));
+        boolean failed = (manager == null) || (!(loadProperties(PROPERTIES_XML) && loadProperties(WORKSPACE_PROPERTIES_XML)));
         if (failed)
             errorDialog.show(LOAD_ERROR_TITLE.getParameterName(), PROPERTIES_LOAD_ERROR_MESSAGE.getParameterName());
         return !failed;
@@ -36,8 +39,8 @@ public final class DataVisualizer extends ApplicationTemplate {
         setUIComponent(new AppUI(primaryStage, this));
         setActionComponent(new AppActions(this));
         setDataComponent(new AppData(this));
-
-        uiComponent.initialize();
+        //is there a missing componet?
+        uiComponent.initialize(); //what does this method do?
     }
 
 }

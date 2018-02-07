@@ -57,6 +57,9 @@ public class PropertyManager {
     }
 
     public void addProperty(String property, String value) {
+        for (String key : properties.keySet()) {
+            System.out.println(key);
+        }
         properties.put(property, value);
     }
 
