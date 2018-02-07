@@ -26,21 +26,25 @@ public final class AppActions implements ActionComponent {
     @Override
     public void handleNewRequest() {
         // TODO for homework 1
+        System.out.println("new request");
     }
 
     @Override
     public void handleSaveRequest() {
         // TODO: NOT A PART OF HW 1
+        System.out.println("save request");
     }
 
     @Override
     public void handleLoadRequest() {
         // TODO: NOT A PART OF HW 1
+        System.out.println("load request");
     }
 
     @Override
     public void handleExitRequest() {
         // TODO for homework 1
+        System.out.println("exit request");
     }
 
     @Override
@@ -48,8 +52,9 @@ public final class AppActions implements ActionComponent {
         // TODO: NOT A PART OF HW 1
     }
 
-    public void handleScreenshotRequest() throws IOException {
+    public void handleScreenshotRequest() /*throws IOException*/ {
         // TODO: NOT A PART OF HW 1
+        System.out.println("ss request");
     }
 
     /**

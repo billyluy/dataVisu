@@ -18,10 +18,8 @@ public final class DataVisualizer extends ApplicationTemplate {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.show();
         dialogsAudit(primaryStage); //sets up error messages for the stage
         if (propertyAudit()) {// propertyAudit() returns true explore method why does this return true
-            System.out.println("ran");
             userInterfaceAudit(primaryStage);//main error comes from here NEXT STEP
         }
     }
