@@ -1,12 +1,27 @@
 package ui;
 
 import actions.AppActions;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
+
+import static settings.AppPropertyTypes.SCREENSHOT_TOOLTIP;
+import static vilij.settings.PropertyTypes.GUI_RESOURCE_PATH;
+import static vilij.settings.PropertyTypes.ICONS_RESOURCE_PATH;
+import static settings.AppPropertyTypes.SCREENSHOT_ICON;
 
 /**
  * This is the application's user interface implementation.
@@ -24,6 +39,7 @@ public final class AppUI extends UITemplate {
     private Button                       displayButton;  // workspace button to display data on the chart
     private TextArea                     textArea;       // text area for new data input
     private boolean                      hasNewText;     // whether or not the text area has any new data since last display
+    protected String                     scrnshotPath;   // path to the 'screenshot' icon
 
     public ScatterChart<Number, Number> getChart() { return chart; }
 
@@ -35,11 +51,21 @@ public final class AppUI extends UITemplate {
     @Override
     protected void setResourcePaths(ApplicationTemplate applicationTemplate) {
         super.setResourcePaths(applicationTemplate);
+        PropertyManager manager = applicationTemplate.manager;
+        String SEPARATOR = "/";
+        String iconsPath = SEPARATOR + String.join(SEPARATOR,
+                manager.getPropertyValue(GUI_RESOURCE_PATH.name()),
+                manager.getPropertyValue(ICONS_RESOURCE_PATH.name()));
+        scrnshotPath = String.join(SEPARATOR, iconsPath, manager.getPropertyValue(SCREENSHOT_ICON.name()));
     }
 
     @Override
     protected void setToolBar(ApplicationTemplate applicationTemplate) {
         // TODO for homework 1
+        super.setToolBar(applicationTemplate);
+        PropertyManager manager = applicationTemplate.manager;
+        scrnshotButton = super.setToolbarButton(scrnshotPath, manager.getPropertyValue(SCREENSHOT_TOOLTIP.name()), true);
+        toolBar.getItems().add(scrnshotButton);
     }
 
     @Override
@@ -50,10 +76,12 @@ public final class AppUI extends UITemplate {
         loadButton.setOnAction(e -> applicationTemplate.getActionComponent().handleLoadRequest());
         exitButton.setOnAction(e -> applicationTemplate.getActionComponent().handleExitRequest());
         printButton.setOnAction(e -> applicationTemplate.getActionComponent().handlePrintRequest());
+        scrnshotButton.setOnAction(e -> ((AppActions)applicationTemplate.getActionComponent()).handleScreenshotRequest());  //TODO change to screenshot action
     }
 
     @Override
     public void initialize() {
+        System.out.println("AppUI init");
         layout();
         setWorkspaceActions();
     }
@@ -65,6 +93,26 @@ public final class AppUI extends UITemplate {
 
     private void layout() {
         // TODO for homework 1
+
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        chart = new ScatterChart<>(xAxis,yAxis);
+        chart.setTitle("Data Visualization");
+
+        VBox vPane = new VBox();
+        Text title = new Text("Data File");
+        textArea = new TextArea();
+        displayButton = new Button("Display");
+        vPane.getChildren().add(title);
+        vPane.getChildren().add(textArea);
+        vPane.getChildren().add(displayButton);
+        vPane.setMaxWidth(this.windowWidth/2);
+
+        HBox hPane = new HBox();
+        hPane.getChildren().add(vPane);
+        hPane.getChildren().add(chart);
+
+        appPane.getChildren().add(hPane);
     }
 
     private void setWorkspaceActions() {
