@@ -1,6 +1,7 @@
 package ui;
 
 import actions.AppActions;
+import dataprocessors.AppData;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.chart.NumberAxis;
@@ -81,7 +82,6 @@ public final class AppUI extends UITemplate {
 
     @Override
     public void initialize() {
-        System.out.println("AppUI init");
         layout();
         setWorkspaceActions();
     }
@@ -93,14 +93,12 @@ public final class AppUI extends UITemplate {
 
     private void layout() {
         // TODO for homework 1
-
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        chart = new ScatterChart<>(xAxis,yAxis);
+        chart = new ScatterChart<>(new NumberAxis(),new NumberAxis());
         chart.setTitle("Data Visualization");
 
         VBox vPane = new VBox();
         Text title = new Text("Data File");
+
         textArea = new TextArea();
         displayButton = new Button("Display");
         vPane.getChildren().add(title);
@@ -113,9 +111,13 @@ public final class AppUI extends UITemplate {
         hPane.getChildren().add(chart);
 
         appPane.getChildren().add(hPane);
+
     }
 
     private void setWorkspaceActions() {
         // TODO for homework 1
+        displayButton.setOnAction(e ->{
+            ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
+        });
     }
 }
