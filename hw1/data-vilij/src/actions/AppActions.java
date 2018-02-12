@@ -18,21 +18,19 @@ public final class AppActions implements ActionComponent {
 
     /** The application to which this class of actions belongs. */
     private ApplicationTemplate applicationTemplate;
-    private ScatterChart<Number, Number> newChart;
 
     /** Path to the data file currently active. */
     Path dataFilePath;
 
     public AppActions(ApplicationTemplate applicationTemplate) {
         this.applicationTemplate = applicationTemplate;
-        newChart = new ScatterChart<>(new NumberAxis(), new NumberAxis());
     }
 
     @Override
     public void handleNewRequest() {
         // TODO for homework 1
         System.out.println("new request");
-        ((AppUI)applicationTemplate.getUIComponent()).clear(); =newChart ;
+        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
     }
 
     @Override

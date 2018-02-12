@@ -4,6 +4,8 @@ import actions.AppActions;
 import dataprocessors.AppData;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
@@ -20,6 +22,9 @@ import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
 
+import static settings.AppPropertyTypes.DISPLAY_BUTTON;
+import static settings.AppPropertyTypes.DATA_TITLE;
+import static settings.AppPropertyTypes.CHART_TITLE;
 import static settings.AppPropertyTypes.SCREENSHOT_TOOLTIP;
 import static vilij.settings.PropertyTypes.GUI_RESOURCE_PATH;
 import static vilij.settings.PropertyTypes.ICONS_RESOURCE_PATH;
@@ -89,20 +94,23 @@ public final class AppUI extends UITemplate {
 
     @Override
     public void clear() {
-        // TODO for homework 1
+        // TODO for homework
     }
 
     private void layout() {
         // TODO for homework 1
+        PropertyManager manager = applicationTemplate.manager;
         chart = new ScatterChart<>(new NumberAxis(),new NumberAxis());
-        chart.setTitle("Data Visualization");
+        chart.setTitle(manager.getPropertyValue(CHART_TITLE.name()));
 
         VBox vPane = new VBox();
-        Text title = new Text("Data File");
+        Text title = new Text();
+        title.setText(manager.getPropertyValue(DATA_TITLE.name()));
         title.setFont(new Font(20));
 
         textArea = new TextArea();
-        displayButton = new Button("Display");
+        displayButton = new Button();
+        displayButton.setText(manager.getPropertyValue(DISPLAY_BUTTON.name()));
         vPane.getChildren().add(title);
         vPane.getChildren().add(textArea);
         vPane.getChildren().add(displayButton);
@@ -120,7 +128,16 @@ public final class AppUI extends UITemplate {
         // TODO for homework 1
         displayButton.setOnAction(e ->{
             ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
-            newButton.setDisable(false);
+        });
+        textArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+                if(oldValue.isEmpty()){
+                    newButton.setDisable(true);
+                }else {
+                    newButton.setDisable(false);
+                }
+            }
         });
     }
 }

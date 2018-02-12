@@ -12,6 +12,9 @@ functionality within the main workspace. -->
 
         <!-- TOOLTIPS FOR BUTTONS -->
         <property name="SCREENSHOT_TOOLTIP" value="Screenshot"/> <!-- will print current view of image to a file -->
+        <property name="DISPLAY_BUTTON" value="Display"/>
+        <property name="CHART_TITLE" value="Data Visualization"/>
+        <property name="DATA_TITLE" value="Data File"/>
 
         <!-- WARNING MESSAGES -->
         <property name="EXIT_WHILE_RUNNING_WARNING"
