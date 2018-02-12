@@ -13,6 +13,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import vilij.propertymanager.PropertyManager;
@@ -98,6 +99,7 @@ public final class AppUI extends UITemplate {
 
         VBox vPane = new VBox();
         Text title = new Text("Data File");
+        title.setFont(new Font(20));
 
         textArea = new TextArea();
         displayButton = new Button("Display");
@@ -118,6 +120,7 @@ public final class AppUI extends UITemplate {
         // TODO for homework 1
         displayButton.setOnAction(e ->{
             ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
+            newButton.setDisable(false);
         });
     }
 }
