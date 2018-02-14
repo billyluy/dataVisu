@@ -9,13 +9,13 @@ import vilij.components.ConfirmationDialog.Option;
 import vilij.components.Dialog;
 import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
-import static settings.AppPropertyTypes.SAVE_UNSAVED_WORK_TITLE;
-import static settings.AppPropertyTypes.SAVE_UNSAVED_WORK;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static settings.AppPropertyTypes.*;
 import static vilij.components.ConfirmationDialog.getDialog;
 
 /**
@@ -95,9 +95,18 @@ public final class AppActions implements ActionComponent {
         applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION).show(manager.getPropertyValue(SAVE_UNSAVED_WORK_TITLE.name()), manager.getPropertyValue(SAVE_UNSAVED_WORK.name()));
         if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.YES)){
             FileChooser fc = new FileChooser();
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Tab-Separated Data files (*.tsd)", "*.tsd");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DATA_FILE_EXT_DESC.name(), DATA_FILE_EXT.name());
             fc.getExtensionFilters().add(extFilter);
             File file = fc.showSaveDialog(((DataVisualizer)applicationTemplate).getUIComponent().getPrimaryWindow());
+
+            fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_PATH.name()) + manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
+            fc.getInitialDirectory();
+            fc.setTitle(SAVE_TITLE.name());
+
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(((AppUI)applicationTemplate.getUIComponent()).getTextAreaText());
+            fileWriter.close();
+
             return true;
         }else if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.NO)){
             return true;

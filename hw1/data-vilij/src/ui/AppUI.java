@@ -141,4 +141,8 @@ public final class AppUI extends UITemplate {
             }
         });
     }
+
+    public String getTextAreaText(){
+        return textArea.getText();
+    }
 }
