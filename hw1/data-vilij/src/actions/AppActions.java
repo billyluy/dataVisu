@@ -1,13 +1,22 @@
 package actions;
 
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ScatterChart;
+import javafx.stage.FileChooser;
 import ui.AppUI;
+import ui.DataVisualizer;
 import vilij.components.ActionComponent;
+import vilij.components.ConfirmationDialog;
+import vilij.components.ConfirmationDialog.Option;
+import vilij.components.Dialog;
+import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
+import static settings.AppPropertyTypes.SAVE_UNSAVED_WORK_TITLE;
+import static settings.AppPropertyTypes.SAVE_UNSAVED_WORK;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+
+import static vilij.components.ConfirmationDialog.getDialog;
 
 /**
  * This is the concrete implementation of the action handlers required by the application.
@@ -29,8 +38,14 @@ public final class AppActions implements ActionComponent {
     @Override
     public void handleNewRequest() {
         // TODO for homework 1
-        System.out.println("new request");
-        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
+        try {
+            if(promptToSave()){
+                ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
+                applicationTemplate.getUIComponent().clear();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -49,6 +64,7 @@ public final class AppActions implements ActionComponent {
     public void handleExitRequest() {
         // TODO for homework 1
         System.out.println("exit request");
+
     }
 
     @Override
@@ -56,9 +72,8 @@ public final class AppActions implements ActionComponent {
         // TODO: NOT A PART OF HW 1
     }
 
-    public void handleScreenshotRequest() /*throws IOException*/ {
+    public void handleScreenshotRequest() throws IOException {
         // TODO: NOT A PART OF HW 1
-        System.out.println("ss request");
     }
 
     /**
@@ -76,6 +91,18 @@ public final class AppActions implements ActionComponent {
     private boolean promptToSave() throws IOException {
         // TODO for homework 1
         // TODO remove the placeholder line below after you have implemented this method
-        return false;
+        PropertyManager manager = applicationTemplate.manager;
+        applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION).show(manager.getPropertyValue(SAVE_UNSAVED_WORK_TITLE.name()), manager.getPropertyValue(SAVE_UNSAVED_WORK.name()));
+        if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.YES)){
+            FileChooser fc = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Tab-Separated Data files (*.tsd)", "*.tsd");
+            fc.getExtensionFilters().add(extFilter);
+            File file = fc.showSaveDialog(((DataVisualizer)applicationTemplate).getUIComponent().getPrimaryWindow());
+            return true;
+        }else if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.NO)){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
