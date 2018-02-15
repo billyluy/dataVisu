@@ -1,12 +1,13 @@
 package actions;
 
+import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import ui.AppUI;
-import ui.DataVisualizer;
 import vilij.components.ActionComponent;
 import vilij.components.ConfirmationDialog;
 import vilij.components.ConfirmationDialog.Option;
 import vilij.components.Dialog;
+import vilij.components.ErrorDialog;
 import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 
@@ -14,9 +15,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static settings.AppPropertyTypes.*;
-import static vilij.components.ConfirmationDialog.getDialog;
 
 /**
  * This is the concrete implementation of the action handlers required by the application.
@@ -38,33 +39,31 @@ public final class AppActions implements ActionComponent {
     @Override
     public void handleNewRequest() {
         // TODO for homework 1
+        PropertyManager manager = applicationTemplate.manager;
         try {
             if(promptToSave()){
                 ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
                 applicationTemplate.getUIComponent().clear();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(INVALID_ERROR.name()));
         }
     }
 
     @Override
     public void handleSaveRequest() {
         // TODO: NOT A PART OF HW 1
-        System.out.println("save request");
     }
 
     @Override
     public void handleLoadRequest() {
         // TODO: NOT A PART OF HW 1
-        System.out.println("load request");
     }
 
     @Override
     public void handleExitRequest() {
         // TODO for homework 1
-        System.out.println("exit request");
-
+        Platform.exit();
     }
 
     @Override
@@ -95,17 +94,24 @@ public final class AppActions implements ActionComponent {
         applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION).show(manager.getPropertyValue(SAVE_UNSAVED_WORK_TITLE.name()), manager.getPropertyValue(SAVE_UNSAVED_WORK.name()));
         if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.YES)){
             FileChooser fc = new FileChooser();
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DATA_FILE_EXT_DESC.name(), DATA_FILE_EXT.name());
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()),manager.getPropertyValue(DATA_FILE_EXT.name()));
             fc.getExtensionFilters().add(extFilter);
-            File file = fc.showSaveDialog(((DataVisualizer)applicationTemplate).getUIComponent().getPrimaryWindow());
 
-            fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_PATH.name()) + manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
+            fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
             fc.getInitialDirectory();
-            fc.setTitle(SAVE_TITLE.name());
+            fc.setTitle(manager.getPropertyValue(SAVE_TITLE.name()));
 
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(((AppUI)applicationTemplate.getUIComponent()).getTextAreaText());
-            fileWriter.close();
+            File file = fc.showSaveDialog((applicationTemplate).getUIComponent().getPrimaryWindow());
+
+            System.out.println(fc.getInitialDirectory().toString());
+            System.out.println(fc.getTitle());
+
+            try(FileWriter fileWriter = new FileWriter(file)) {
+                fileWriter.write(((AppUI)applicationTemplate.getUIComponent()).getTextAreaText());
+                fileWriter.close();
+            }catch (NullPointerException e){
+                (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(NULL_ERROR.name()));
+            }
 
             return true;
         }else if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.NO)){

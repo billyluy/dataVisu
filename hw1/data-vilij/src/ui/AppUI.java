@@ -2,8 +2,6 @@ package ui;
 
 import actions.AppActions;
 import dataprocessors.AppData;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.Button;
@@ -17,15 +15,9 @@ import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 import vilij.templates.UITemplate;
 
-import java.io.IOException;
-
-import static settings.AppPropertyTypes.DISPLAY_BUTTON;
-import static settings.AppPropertyTypes.DATA_TITLE;
-import static settings.AppPropertyTypes.CHART_TITLE;
-import static settings.AppPropertyTypes.SCREENSHOT_TOOLTIP;
+import static settings.AppPropertyTypes.*;
 import static vilij.settings.PropertyTypes.GUI_RESOURCE_PATH;
 import static vilij.settings.PropertyTypes.ICONS_RESOURCE_PATH;
-import static settings.AppPropertyTypes.SCREENSHOT_ICON;
 
 /**
  * This is the application's user interface implementation.
@@ -80,13 +72,15 @@ public final class AppUI extends UITemplate {
         loadButton.setOnAction(e -> applicationTemplate.getActionComponent().handleLoadRequest());
         exitButton.setOnAction(e -> applicationTemplate.getActionComponent().handleExitRequest());
         printButton.setOnAction(e -> applicationTemplate.getActionComponent().handlePrintRequest());
+        /*
         scrnshotButton.setOnAction(e -> {
             try {
                 ((AppActions)applicationTemplate.getActionComponent()).handleScreenshotRequest();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-        });  //TODO change to screenshot action
+        });
+        */
     }
 
     @Override
@@ -109,7 +103,7 @@ public final class AppUI extends UITemplate {
 
         VBox vPane = new VBox();
         Text title = new Text();
-        title.setText(manager.getPropertyValue(DATA_TITLE.name()));
+        title.setText(manager.getPropertyValue(TEXT_AREA.name()));
         title.setFont(new Font(20));
 
         textArea = new TextArea();
@@ -130,14 +124,20 @@ public final class AppUI extends UITemplate {
 
     private void setWorkspaceActions() {
         // TODO for homework 1
-        displayButton.setOnAction(e -> ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText()));
+        hasNewText = true;
+        displayButton.setOnAction(e -> {
+            if(hasNewText){
+                chart.getData().clear();
+                ((AppData) applicationTemplate.getDataComponent()).loadData(textArea.getText());
+            }
+        });
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(textArea.getText().contains("\n")){
-                newButton.setDisable(false);
-                saveButton.setDisable(false);
-            }else {
+            if(textArea.getText().isEmpty()){
                 newButton.setDisable(true);
                 saveButton.setDisable(true);
+            }else {
+                newButton.setDisable(false);
+                saveButton.setDisable(false);
             }
         });
     }
