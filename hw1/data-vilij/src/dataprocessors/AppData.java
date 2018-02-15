@@ -2,9 +2,14 @@ package dataprocessors;
 
 import ui.AppUI;
 import vilij.components.DataComponent;
+import vilij.components.Dialog;
+import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 
 import java.nio.file.Path;
+
+import static settings.AppPropertyTypes.INVALID_ERROR;
+import static settings.AppPropertyTypes.ERROR_TITLE;
 
 /**
  * This is the concrete application-specific implementation of the data component defined by the Vilij framework.
@@ -30,10 +35,11 @@ public class AppData implements DataComponent {
     public void loadData(String dataString) {
         // TODO for homework 1
         //this part processes the data
+        PropertyManager manager = applicationTemplate.manager;
         try {
             processor.processString(dataString);
         } catch (Exception e) {
-            e.printStackTrace();
+            (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(INVALID_ERROR.name()));
         }
         displayData();
     }

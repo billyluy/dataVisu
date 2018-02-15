@@ -5,8 +5,7 @@ functionality within the main workspace. -->
 <properties>
     <property_list>
         <!-- RESOURCE FILES AND FOLDERS -->
-        <property name="DATA_RESOURCE_PATH" value="data"/>
-        <property name="DATA_PATH" value="data-vilij\\resources\\"/>
+        <property name="DATA_RESOURCE_PATH" value="hw1\\data-vilij\\resources\\data"/>
 
         <!-- USER INTERFACE ICON FILES -->
         <property name="SCREENSHOT_ICON" value="screenshot.png"/>
@@ -15,7 +14,6 @@ functionality within the main workspace. -->
         <property name="SCREENSHOT_TOOLTIP" value="Screenshot"/> <!-- will print current view of image to a file -->
         <property name="DISPLAY_BUTTON" value="Display"/>
         <property name="CHART_TITLE" value="Data Visualization"/>
-        <property name="DATA_TITLE" value="Data File"/>
         <property name="SAVE_TITLE" value="Untitled"/>
 
 
@@ -25,6 +23,9 @@ functionality within the main workspace. -->
 
         <!-- ERROR MESSAGES -->
         <property name="RESOURCE_SUBDIR_NOT_FOUND" value="Directory not found under resources."/>
+        <property name="ERROR_TITLE" value="Error."/>
+        <property name="INVALID_ERROR" value="Invalid data error."/>
+        <property name="NULL_ERROR" value="Your file didn't save."/>
 
         <!-- APPLICATION-SPECIFIC MESSAGE TITLES -->
         <property name="SAVE_UNSAVED_WORK_TITLE" value="Save Current Work"/>
@@ -35,7 +36,7 @@ functionality within the main workspace. -->
         <!-- APPLICATION-SPECIFIC PARAMETERS -->
         <property name="DATA_FILE_EXT" value=".tsd"/>
         <property name="DATA_FILE_EXT_DESC" value="Tab-Separated Data File (*.tsd)"/>
-        <property name="TEXT_AREA" value="text area"/>
+        <property name="TEXT_AREA" value="DATA FILE"/>
         <property name="SPECIFIED_FILE" value=" specified file"/>
 
     </property_list>

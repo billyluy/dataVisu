@@ -11,7 +11,6 @@ public enum AppPropertyTypes {
 
     /* resource files and folders */
     DATA_RESOURCE_PATH,
-    DATA_PATH,
 
     /* user interface icon file names */
     SCREENSHOT_ICON,
@@ -19,12 +18,14 @@ public enum AppPropertyTypes {
     /* tooltips for user interface buttons */
     SCREENSHOT_TOOLTIP,
     DISPLAY_BUTTON,
-    DATA_TITLE,
     CHART_TITLE,
     SAVE_TITLE,
 
     /* error messages */
     RESOURCE_SUBDIR_NOT_FOUND,
+    ERROR_TITLE,
+    INVALID_ERROR,
+    NULL_ERROR,
 
     /* application-specific message titles */
     SAVE_UNSAVED_WORK_TITLE,
