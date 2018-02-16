@@ -25,7 +25,6 @@ public enum AppPropertyTypes {
     RESOURCE_SUBDIR_NOT_FOUND,
     ERROR_TITLE,
     INVALID_ERROR,
-    NULL_ERROR,
 
     /* application-specific message titles */
     SAVE_UNSAVED_WORK_TITLE,

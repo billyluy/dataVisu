@@ -22,10 +22,9 @@ functionality within the main workspace. -->
                   value="An algorithm is running. If you exit now, all unsaved changes will be lost. Are you sure?"/>
 
         <!-- ERROR MESSAGES -->
-        <property name="RESOURCE_SUBDIR_NOT_FOUND" value="Directory not found under resources."/>
+        <property name="RESOURCE_SUBDIR_NOT_FOUND" value="Error."/>
         <property name="ERROR_TITLE" value="Error."/>
         <property name="INVALID_ERROR" value="Invalid data error."/>
-        <property name="NULL_ERROR" value="Your file didn't save."/>
 
         <!-- APPLICATION-SPECIFIC MESSAGE TITLES -->
         <property name="SAVE_UNSAVED_WORK_TITLE" value="Save Current Work"/>

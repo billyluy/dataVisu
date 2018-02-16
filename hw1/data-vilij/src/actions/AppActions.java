@@ -7,7 +7,6 @@ import vilij.components.ActionComponent;
 import vilij.components.ConfirmationDialog;
 import vilij.components.ConfirmationDialog.Option;
 import vilij.components.Dialog;
-import vilij.components.ErrorDialog;
 import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
 
@@ -15,7 +14,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static settings.AppPropertyTypes.*;
 
@@ -96,25 +94,22 @@ public final class AppActions implements ActionComponent {
             FileChooser fc = new FileChooser();
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()),manager.getPropertyValue(DATA_FILE_EXT.name()));
             fc.getExtensionFilters().add(extFilter);
-
+            dataFilePath = fc.getInitialDirectory().toPath();
             fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
             fc.getInitialDirectory();
             fc.setTitle(manager.getPropertyValue(SAVE_TITLE.name()));
 
             File file = fc.showSaveDialog((applicationTemplate).getUIComponent().getPrimaryWindow());
 
-            System.out.println(fc.getInitialDirectory().toString());
-            System.out.println(fc.getTitle());
-
             try(FileWriter fileWriter = new FileWriter(file)) {
                 fileWriter.write(((AppUI)applicationTemplate.getUIComponent()).getTextAreaText());
                 fileWriter.close();
             }catch (NullPointerException e){
-                (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(NULL_ERROR.name()));
+                (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(SPECIFIED_FILE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
             }
-
             return true;
-        }else if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.NO)){
+        }
+        if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.NO)){
             return true;
         }else{
             return false;
