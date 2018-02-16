@@ -94,7 +94,6 @@ public final class AppActions implements ActionComponent {
             FileChooser fc = new FileChooser();
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()),manager.getPropertyValue(DATA_FILE_EXT.name()));
             fc.getExtensionFilters().add(extFilter);
-            dataFilePath = fc.getInitialDirectory().toPath();
             fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
             fc.getInitialDirectory();
             fc.setTitle(manager.getPropertyValue(SAVE_TITLE.name()));
