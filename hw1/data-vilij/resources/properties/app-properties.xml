@@ -6,6 +6,7 @@ functionality within the main workspace. -->
     <property_list>
         <!-- RESOURCE FILES AND FOLDERS -->
         <property name="DATA_RESOURCE_PATH" value="hw1\\data-vilij\\resources\\data"/>
+        <property name="CSS_PATH" value="gui.css/style.css"/>
 
         <!-- USER INTERFACE ICON FILES -->
         <property name="SCREENSHOT_ICON" value="screenshot.png"/>
@@ -22,9 +23,13 @@ functionality within the main workspace. -->
                   value="An algorithm is running. If you exit now, all unsaved changes will be lost. Are you sure?"/>
 
         <!-- ERROR MESSAGES -->
-        <property name="RESOURCE_SUBDIR_NOT_FOUND" value="Error."/>
+        <property name="RESOURCE_SUBDIR_NOT_FOUND" value="Invalid directory."/>
         <property name="ERROR_TITLE" value="Error."/>
         <property name="INVALID_ERROR" value="Invalid data error."/>
+        <property name="ERROR_LINE" value="There is an error at line, "/>
+        <property name="DUPE_LINE" value="There is an duplicate at line, "/>
+        <property name="LENGTH1" value="Loaded data consists of lines "/>
+        <property name="LENGTH2" value=" Showing only the first 10 in the text area."/>
 
         <!-- APPLICATION-SPECIFIC MESSAGE TITLES -->
         <property name="SAVE_UNSAVED_WORK_TITLE" value="Save Current Work"/>
@@ -35,6 +40,8 @@ functionality within the main workspace. -->
         <!-- APPLICATION-SPECIFIC PARAMETERS -->
         <property name="DATA_FILE_EXT" value="*.tsd"/>
         <property name="DATA_FILE_EXT_DESC" value="Tab-Separated Data File (*.tsd)"/>
+        <property name="PNG_EXT" value="*.png"/>
+        <property name="PNG_EXT_DESC" value="PNG (*.png)"/>
         <property name="TEXT_AREA" value="DATA FILE"/>
         <property name="SPECIFIED_FILE" value=" specified file"/>
 

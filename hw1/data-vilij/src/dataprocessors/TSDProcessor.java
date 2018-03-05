@@ -1,10 +1,14 @@
 package dataprocessors;
 
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Tooltip;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 /**
@@ -28,12 +32,22 @@ public final class TSDProcessor {
         }
     }
 
+    public static class DupeException extends Exception {
+        public DupeException() {
+            super(String.format("Dupe at:"));
+        }
+    }
+
     private Map<String, String>  dataLabels;
     private Map<String, Point2D> dataPoints;
+    private ArrayList<Integer>   errorArray = new ArrayList<>();
+    private int                  lineOfDupe;
+    private String               dupeName;
 
     public TSDProcessor() {
         dataLabels = new HashMap<>();
         dataPoints = new HashMap<>();
+        lineOfDupe = -1;
     }
 
     /**
@@ -44,12 +58,18 @@ public final class TSDProcessor {
      */
     public void processString(String tsdString) throws Exception {
         AtomicBoolean hadAnError   = new AtomicBoolean(false);
+        AtomicInteger counter = new AtomicInteger(0);
         StringBuilder errorMessage = new StringBuilder();
         Stream.of(tsdString.split("\n"))
               .map(line -> Arrays.asList(line.split("\t")))
               .forEach(list -> {
                   try {
                       String   name  = checkedname(list.get(0));
+                      if(isDupe(name)){
+                          lineOfDupe = dataLabels.size()+1;
+                          dupeName = name;
+                          throw new DupeException();
+                      }
                       String   label = list.get(1);
                       String[] pair  = list.get(2).split(",");
                       Point2D  point = new Point2D(Double.parseDouble(pair[0]), Double.parseDouble(pair[1]));
@@ -59,10 +79,20 @@ public final class TSDProcessor {
                       errorMessage.setLength(0);
                       errorMessage.append(e.getClass().getSimpleName()).append(": ").append(e.getMessage());
                       hadAnError.set(true);
+                      errorArray.add(dataLabels.size()+1);
                   }
               });
         if (errorMessage.length() > 0)
             throw new Exception(errorMessage.toString());
+    }
+
+    public boolean isDupe(String name){
+        for(Map.Entry<String,String> entry: dataLabels.entrySet()){
+            if(name.equals(entry.getKey())){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -81,6 +111,7 @@ public final class TSDProcessor {
             });
             chart.getData().add(series);
         }
+        hoverThingy(chart);
     }
 
     void clear() {
@@ -92,5 +123,32 @@ public final class TSDProcessor {
         if (!name.startsWith("@"))
             throw new InvalidDataNameException(name);
         return name;
+    }
+
+    public Map<String, Point2D> getDataPoints(){
+        return dataPoints;
+    }
+
+    public void hoverThingy(XYChart<Number,Number> chart){
+        for (XYChart.Series<Number, Number> s : chart.getData()) {
+            for (XYChart.Data<Number, Number> d : s.getData()) {
+                Tooltip.install(d.getNode(), new Tooltip(
+                        s.getName()));
+                d.getNode().setOnMouseEntered(event -> d.getNode().setCursor(Cursor.HAND));
+                d.getNode().setOnMouseExited(event -> d.getNode().setCursor(Cursor.DEFAULT));
+            }
+        }
+    }
+
+    public ArrayList<Integer> getErrorArray(){
+        return errorArray;
+    }
+
+    public int getLineOfDupe(){
+        return lineOfDupe;
+    }
+
+    public String getDupeName(){
+        return dupeName;
     }
 }
