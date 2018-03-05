@@ -2,13 +2,12 @@ package dataprocessors;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+
 import java.util.stream.Stream;
 
 /**
@@ -58,7 +57,6 @@ public final class TSDProcessor {
      */
     public void processString(String tsdString) throws Exception {
         AtomicBoolean hadAnError   = new AtomicBoolean(false);
-        AtomicInteger counter = new AtomicInteger(0);
         StringBuilder errorMessage = new StringBuilder();
         Stream.of(tsdString.split("\n"))
               .map(line -> Arrays.asList(line.split("\t")))
@@ -115,6 +113,9 @@ public final class TSDProcessor {
     }
 
     void clear() {
+        lineOfDupe = -1;
+        dupeName = "";
+        errorArray.clear();
         dataPoints.clear();
         dataLabels.clear();
     }

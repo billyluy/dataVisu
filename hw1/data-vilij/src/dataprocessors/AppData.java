@@ -9,14 +9,11 @@ import vilij.templates.ApplicationTemplate;
 
 import javafx.geometry.Point2D;
 
-import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static settings.AppPropertyTypes.*;
-import static settings.AppPropertyTypes.DATA_RESOURCE_PATH;
-import static settings.AppPropertyTypes.SAVE_TITLE;
 
 /**
  * This is the concrete application-specific implementation of the data component defined by the Vilij framework.
@@ -121,10 +118,10 @@ public class AppData implements DataComponent {
             }
             averageY = averageY /(processor.getDataPoints().values().size());
 
-            XYChart.Series<Number,Number> series2 = new XYChart.Series();
+            XYChart.Series<Number,Number> series2 = new XYChart.Series<>();
             series2.setName("Average Y-Value");
-            series2.getData().add(new XYChart.Data(minX, averageY));
-            series2.getData().add(new XYChart.Data(maxX, averageY));
+            series2.getData().add(new XYChart.Data<>(minX, averageY));
+            series2.getData().add(new XYChart.Data<>(maxX, averageY));
             ((AppUI) applicationTemplate.getUIComponent()).getChart().getData().add(series2);
             for (Object data: series2.getData()) {
                 ((XYChart.Data)data).getNode().setVisible(false);
