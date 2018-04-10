@@ -7,6 +7,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -22,8 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static settings.AppPropertyTypes.*;
-import static vilij.settings.PropertyTypes.GUI_RESOURCE_PATH;
-import static vilij.settings.PropertyTypes.ICONS_RESOURCE_PATH;
+import static vilij.settings.PropertyTypes.*;
 
 /**
  * This is the application's user interface implementation.
@@ -66,10 +66,19 @@ public final class AppUI extends UITemplate {
     @Override
     protected void setToolBar(ApplicationTemplate applicationTemplate) {
         // TODO for homework 1
+        /*
         super.setToolBar(applicationTemplate);
         PropertyManager manager = applicationTemplate.manager;
         scrnshotButton = super.setToolbarButton(scrnshotPath, manager.getPropertyValue(SCREENSHOT_TOOLTIP.name()), true);
         toolBar.getItems().add(scrnshotButton);
+        */
+        PropertyManager manager = applicationTemplate.manager;
+        newButton = super.setToolbarButton(newiconPath, manager.getPropertyValue(NEW_TOOLTIP.name()), true);
+        saveButton = super.setToolbarButton(saveiconPath, manager.getPropertyValue(SAVE_TOOLTIP.name()), true);
+        loadButton = super.setToolbarButton(loadiconPath, manager.getPropertyValue(LOAD_TOOLTIP.name()), false);
+        exitButton = super.setToolbarButton(exiticonPath, manager.getPropertyValue(EXIT_TOOLTIP.name()), false);
+        scrnshotButton = super.setToolbarButton(scrnshotPath, manager.getPropertyValue(SCREENSHOT_TOOLTIP.name()), true);
+        toolBar = new ToolBar(newButton, saveButton, loadButton, exitButton, scrnshotButton);
     }
 
     @Override
@@ -80,7 +89,6 @@ public final class AppUI extends UITemplate {
         saveButton.setOnAction(e -> applicationTemplate.getActionComponent().handleSaveRequest());
         loadButton.setOnAction(e -> applicationTemplate.getActionComponent().handleLoadRequest());
         exitButton.setOnAction(e -> applicationTemplate.getActionComponent().handleExitRequest());
-        printButton.setOnAction(e -> applicationTemplate.getActionComponent().handlePrintRequest());
         scrnshotButton.setOnAction(e -> {
             try {
                 ((AppActions)applicationTemplate.getActionComponent()).handleScreenshotRequest();
@@ -111,24 +119,26 @@ public final class AppUI extends UITemplate {
         chart.setVerticalGridLinesVisible(false);
         chart.setHorizontalZeroLineVisible(false);
         chart.setVerticalZeroLineVisible(false);
-
         chart.setTitle(manager.getPropertyValue(CHART_TITLE.name()));
 
         VBox vPane = new VBox();
         Text title = new Text();
         title.setText(manager.getPropertyValue(TEXT_AREA.name()));
         title.setFont(new Font(20));
+        title.setVisible(false);
 
         textArea = new TextArea();
+        textArea.setVisible(false);
         textArea2 = new TextArea();
         displayButton = new Button();
         displayButton.setText(manager.getPropertyValue(DISPLAY_BUTTON.name()));
+        displayButton.setVisible(false);
         checkBox = new CheckBox("Read-Only");
+        checkBox.setVisible(false);
         vPane.getChildren().add(title);
         vPane.getChildren().add(textArea);
         vPane.getChildren().add(displayButton);
         vPane.getChildren().add(checkBox);
-        vPane.setMaxWidth(this.windowWidth/2);
 
         HBox hPane = new HBox();
         hPane.getChildren().add(vPane);
