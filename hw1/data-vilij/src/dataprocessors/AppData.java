@@ -37,6 +37,7 @@ public class AppData implements DataComponent {
         PropertyManager manager = applicationTemplate.manager;
         StringBuilder first = new StringBuilder();
         StringBuilder rest = new StringBuilder();
+        StringBuilder inputData = new StringBuilder();
         int lineCount = 0;
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(dataFilePath.toString()));
@@ -54,6 +55,14 @@ public class AppData implements DataComponent {
                 processor.processString(first + rest.toString());
                 ((AppUI) applicationTemplate.getUIComponent()).getTextArea().setText(first.toString());
                 ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().setText(rest.toString());
+                inputData.append(processor.getInstanceSize() + " instances with " + processor.getUniqueLabels().size() + " labels loaded from: \n"
+                                 + dataFilePath.toString() + "\n");
+                for(Object labels : processor.getUniqueLabels()){
+                    inputData.append("\t -" + labels.toString() + "\n");
+                }
+                ((AppUI) applicationTemplate.getUIComponent()).getInputDataText().setText(inputData.toString());
+                ((AppUI) applicationTemplate.getUIComponent()).getVPane().setVisible(true);
+                ((AppUI) applicationTemplate.getUIComponent()).getTextArea().setDisable(true);
                 (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(LENGTH1.name()) + Integer.toString(lineCount) +manager.getPropertyValue(LENGTH2.name()));
             } catch (Exception e) {
                 if (processor.getLineOfDupe() != -1) {

@@ -2,6 +2,7 @@ package ui;
 
 import actions.AppActions;
 import dataprocessors.AppData;
+import dataprocessors.TSDProcessor;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
@@ -37,6 +38,7 @@ public final class AppUI extends UITemplate {
 
     @SuppressWarnings("FieldCanBeLocal")
     private Button                       scrnshotButton; // toolbar button to take a screenshot of the data
+    private Button                       editToggle;
     private LineChart<Number, Number>    chart;          // the chart where data will be displayed
     private Button                       displayButton;  // workspace button to display data on the chart
     private TextArea                     textArea;       // text area for new data input
@@ -44,6 +46,9 @@ public final class AppUI extends UITemplate {
     private boolean                      hasNewText;     // whether or not the text area has any new data since last display
     protected String                     scrnshotPath;   // path to the 'screenshot' icon
     private CheckBox                     checkBox;
+    private Text                         inputDataText;
+    private VBox                         vPane;
+    private HBox                         hPane;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -73,7 +78,7 @@ public final class AppUI extends UITemplate {
         toolBar.getItems().add(scrnshotButton);
         */
         PropertyManager manager = applicationTemplate.manager;
-        newButton = super.setToolbarButton(newiconPath, manager.getPropertyValue(NEW_TOOLTIP.name()), true);
+        newButton = super.setToolbarButton(newiconPath, manager.getPropertyValue(NEW_TOOLTIP.name()), false);
         saveButton = super.setToolbarButton(saveiconPath, manager.getPropertyValue(SAVE_TOOLTIP.name()), true);
         loadButton = super.setToolbarButton(loadiconPath, manager.getPropertyValue(LOAD_TOOLTIP.name()), false);
         exitButton = super.setToolbarButton(exiticonPath, manager.getPropertyValue(EXIT_TOOLTIP.name()), false);
@@ -121,26 +126,29 @@ public final class AppUI extends UITemplate {
         chart.setVerticalZeroLineVisible(false);
         chart.setTitle(manager.getPropertyValue(CHART_TITLE.name()));
 
-        VBox vPane = new VBox();
+        vPane = new VBox();
         Text title = new Text();
         title.setText(manager.getPropertyValue(TEXT_AREA.name()));
         title.setFont(new Font(20));
-        title.setVisible(false);
+
+        inputDataText = new Text();
 
         textArea = new TextArea();
-        textArea.setVisible(false);
         textArea2 = new TextArea();
         displayButton = new Button();
+        editToggle = new Button();
+        editToggle.setText("Done");
         displayButton.setText(manager.getPropertyValue(DISPLAY_BUTTON.name()));
-        displayButton.setVisible(false);
         checkBox = new CheckBox("Read-Only");
-        checkBox.setVisible(false);
         vPane.getChildren().add(title);
         vPane.getChildren().add(textArea);
-        vPane.getChildren().add(displayButton);
-        vPane.getChildren().add(checkBox);
+        vPane.getChildren().add(editToggle);
+        vPane.getChildren().add(inputDataText);
+//        vPane.getChildren().add(displayButton);
+//        vPane.getChildren().add(checkBox);
+        vPane.setVisible(false);
 
-        HBox hPane = new HBox();
+        hPane = new HBox();
         hPane.getChildren().add(vPane);
         hPane.getChildren().add(chart);
 
@@ -149,9 +157,31 @@ public final class AppUI extends UITemplate {
 
     private void setWorkspaceActions() {
         // TODO for homework 1
+        TSDProcessor processor = new TSDProcessor();
+        PropertyManager manager = applicationTemplate.manager;
         displayButton.setOnAction(e -> {
             String s = textArea.getText()+ textArea2.getText();
             ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+        });
+        editToggle.setOnAction(e -> {
+            if(editToggle.getText().equals("Done")){
+                try{
+                    processor.processString(textArea.getText());
+                    editToggle.setText("Edit");
+                    textArea.setDisable(true);
+                }catch (Exception el) {
+                if (processor.getLineOfDupe() != -1) {
+                    (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(DUPE_LINE.name())+processor.getLineOfDupe() +processor.getDupeName());
+                }else if(!processor.getErrorArray().isEmpty()){
+                    (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(ERROR_LINE.name()) + Integer.toString(processor.getErrorArray().get(0)));
+                }else{
+                    (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
+                }
+            }
+            }else if(editToggle.getText().equals("Edit")){
+                editToggle.setText("Done");
+                textArea.setDisable(false);
+            }
         });
         textArea.textProperty().addListener((observable, oldValue, newValue) -> {
             StringBuilder s = new StringBuilder();
@@ -174,10 +204,10 @@ public final class AppUI extends UITemplate {
 
 
             if(textArea.getText().isEmpty()){
-                newButton.setDisable(true);
+//                newButton.setDisable(true);
                 saveButton.setDisable(true);
             }else {
-                newButton.setDisable(false);
+//                newButton.setDisable(false);
                 saveButton.setDisable(false);
             }
         });
@@ -187,6 +217,8 @@ public final class AppUI extends UITemplate {
         });
     }
 
+    public VBox getVPane() { return vPane;}
+
     public TextArea getTextArea(){
         return textArea;
     }
@@ -194,6 +226,8 @@ public final class AppUI extends UITemplate {
     public TextArea getTextArea2(){
         return textArea2;
     }
+
+    public Text getInputDataText() { return inputDataText; }
 
     public Button getSaveButton(){
         return saveButton;

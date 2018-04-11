@@ -44,6 +44,7 @@ public final class AppActions implements ActionComponent {
     public void handleNewRequest() {
         // TODO for homework 1
         PropertyManager manager = applicationTemplate.manager;
+        /*
         try {
             if(promptToSave()){
                 ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
@@ -56,6 +57,17 @@ public final class AppActions implements ActionComponent {
         } catch (IOException e) {
             (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
         }
+        */
+        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
+        applicationTemplate.getUIComponent().clear();
+        ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().clear();
+        ((AppUI) applicationTemplate.getUIComponent()).getTextArea().clear();
+        ((AppUI) applicationTemplate.getUIComponent()).getInputDataText().setText("");
+        ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
+        ((AppUI) applicationTemplate.getUIComponent()).getTextArea().setDisable(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getVPane().setVisible(true);
+        dataFilePath = null;
+
     }
 
     @Override
@@ -101,7 +113,6 @@ public final class AppActions implements ActionComponent {
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()), manager.getPropertyValue(DATA_FILE_EXT.name()));
         fileChooser.getExtensionFilters().add(extFilter);
-        fileChooser.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
         fileChooser.getInitialDirectory();
         File file = fileChooser.showOpenDialog((applicationTemplate).getUIComponent().getPrimaryWindow());
         try{

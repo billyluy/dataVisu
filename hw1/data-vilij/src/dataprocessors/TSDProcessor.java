@@ -42,10 +42,12 @@ public final class TSDProcessor {
     private ArrayList<Integer>   errorArray = new ArrayList<>();
     private int                  lineOfDupe;
     private String               dupeName;
+    private HashSet              uniqueLabels;
 
     public TSDProcessor() {
         dataLabels = new HashMap<>();
         dataPoints = new HashMap<>();
+        uniqueLabels = new HashSet();
         lineOfDupe = -1;
     }
 
@@ -69,6 +71,12 @@ public final class TSDProcessor {
                           throw new DupeException();
                       }
                       String   label = list.get(1);
+                      System.out.println(label);
+                      if(label.equals("")){
+                          uniqueLabels.add("null");
+                      }else{
+                          uniqueLabels.add(label);
+                      }
                       String[] pair  = list.get(2).split(",");
                       Point2D  point = new Point2D(Double.parseDouble(pair[0]), Double.parseDouble(pair[1]));
                       dataLabels.put(name, label);
@@ -82,6 +90,7 @@ public final class TSDProcessor {
               });
         if (errorMessage.length() > 0)
             throw new Exception(errorMessage.toString());
+        System.out.println(uniqueLabels.toString());
     }
 
     public boolean isDupe(String name){
@@ -152,4 +161,8 @@ public final class TSDProcessor {
     public String getDupeName(){
         return dupeName;
     }
+
+    public HashSet getUniqueLabels() { return uniqueLabels; }
+
+    public int getInstanceSize() { return dataPoints.size(); }
 }
