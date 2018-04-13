@@ -60,12 +60,20 @@ public final class AppActions implements ActionComponent {
         */
         ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
         applicationTemplate.getUIComponent().clear();
+        ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
         ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().clear();
         ((AppUI) applicationTemplate.getUIComponent()).getTextArea().clear();
         ((AppUI) applicationTemplate.getUIComponent()).getInputDataText().setText("");
         ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
         ((AppUI) applicationTemplate.getUIComponent()).getTextArea().setDisable(false);
         ((AppUI) applicationTemplate.getUIComponent()).getVPane().setVisible(true);
+        ((AppUI) applicationTemplate.getUIComponent()).getEditToggle().setVisible(true);
+        ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getTb1().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getTb2().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
+
         dataFilePath = null;
 
     }
@@ -118,6 +126,8 @@ public final class AppActions implements ActionComponent {
         try{
             dataFilePath = file.toPath();
             applicationTemplate.getDataComponent().loadData(file.toPath());
+            ((AppUI)applicationTemplate.getUIComponent()).getEditToggle().setVisible(false);
+            ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(true);
         } catch (NullPointerException e){
             (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(SPECIFIED_FILE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
         }

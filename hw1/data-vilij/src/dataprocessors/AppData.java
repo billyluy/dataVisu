@@ -25,6 +25,7 @@ public class AppData implements DataComponent {
 
     private TSDProcessor        processor;
     private ApplicationTemplate applicationTemplate;
+    private StringBuilder       inputData;
 
     public AppData(ApplicationTemplate applicationTemplate) {
         this.processor = new TSDProcessor();
@@ -37,7 +38,7 @@ public class AppData implements DataComponent {
         PropertyManager manager = applicationTemplate.manager;
         StringBuilder first = new StringBuilder();
         StringBuilder rest = new StringBuilder();
-        StringBuilder inputData = new StringBuilder();
+        inputData = new StringBuilder();
         int lineCount = 0;
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(dataFilePath.toString()));
@@ -55,14 +56,20 @@ public class AppData implements DataComponent {
                 processor.processString(first + rest.toString());
                 ((AppUI) applicationTemplate.getUIComponent()).getTextArea().setText(first.toString());
                 ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().setText(rest.toString());
-                inputData.append(processor.getInstanceSize() + " instances with " + processor.getUniqueLabels().size() + " labels loaded from: \n"
-                                 + dataFilePath.toString() + "\n");
-                for(Object labels : processor.getUniqueLabels()){
-                    inputData.append("\t -" + labels.toString() + "\n");
-                }
-                ((AppUI) applicationTemplate.getUIComponent()).getInputDataText().setText(inputData.toString());
+                loadMetaData(dataFilePath.toString());
                 ((AppUI) applicationTemplate.getUIComponent()).getVPane().setVisible(true);
                 ((AppUI) applicationTemplate.getUIComponent()).getTextArea().setDisable(true);
+                ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getTb1().setVisible(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getTb2().setVisible(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getTb1().setDisable(false);
+                ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
+                ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
+                if(((AppData)applicationTemplate.getDataComponent()).getProcessor().twoNonNulls()){
+                    ((AppUI) applicationTemplate.getUIComponent()).getTb1().setDisable(false);
+                }else{
+                    ((AppUI) applicationTemplate.getUIComponent()).getTb1().setDisable(true);
+                }
                 (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(LENGTH1.name()) + Integer.toString(lineCount) +manager.getPropertyValue(LENGTH2.name()));
             } catch (Exception e) {
                 if (processor.getLineOfDupe() != -1) {
@@ -105,6 +112,16 @@ public class AppData implements DataComponent {
         }
     }
 
+    public void loadMetaData(String location){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(processor.getInstanceSize() + " instances with " + processor.getUniqueLabels().size() + " labels loaded from: \n"
+                + location + "\n");
+        for(Object labels : processor.getUniqueLabels()){
+            stringBuilder.append("\t -" + labels.toString() + "\n");
+        }
+        ((AppUI) applicationTemplate.getUIComponent()).getInputDataText().setText(stringBuilder.toString());
+    }
+
     @Override
     public void clear() {
         processor.clear();
@@ -138,5 +155,9 @@ public class AppData implements DataComponent {
             }
             ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
         }
+    }
+
+    public TSDProcessor getProcessor() {
+        return processor;
     }
 }

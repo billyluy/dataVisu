@@ -71,11 +71,9 @@ public final class TSDProcessor {
                           throw new DupeException();
                       }
                       String   label = list.get(1);
-                      System.out.println(label);
-                      if(label.equals("")){
-                          uniqueLabels.add("null");
-                      }else{
-                          uniqueLabels.add(label);
+                      uniqueLabels.add(label);
+                      if(label.equals("")) {
+                          throw new InvalidDataNameException("");
                       }
                       String[] pair  = list.get(2).split(",");
                       Point2D  point = new Point2D(Double.parseDouble(pair[0]), Double.parseDouble(pair[1]));
@@ -90,7 +88,20 @@ public final class TSDProcessor {
               });
         if (errorMessage.length() > 0)
             throw new Exception(errorMessage.toString());
-        System.out.println(uniqueLabels.toString());
+    }
+
+    public boolean twoNonNulls(){
+        int numNonNulls = 0;
+        for(Object label : uniqueLabels){
+            if(!label.equals(null)){
+                numNonNulls++;
+            }
+        }
+        if(numNonNulls == 2){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public boolean isDupe(String name){
@@ -121,12 +132,13 @@ public final class TSDProcessor {
         hoverThingy(chart);
     }
 
-    void clear() {
+    public void clear() {
         lineOfDupe = -1;
         dupeName = "";
         errorArray.clear();
         dataPoints.clear();
         dataLabels.clear();
+        uniqueLabels.clear();
     }
 
     private String checkedname(String name) throws InvalidDataNameException {
