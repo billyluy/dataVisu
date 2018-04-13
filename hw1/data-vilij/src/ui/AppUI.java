@@ -3,14 +3,14 @@ package ui;
 import actions.AppActions;
 import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import dataprocessors.configurationClassificationWindow;
+import javafx.event.EventHandler;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -64,6 +64,28 @@ public final class AppUI extends UITemplate {
     private Button                       cb2;
     private Button                       cb3;
     private Button                       runButton;
+    private boolean                      configed1;
+    private boolean                      configed2;
+    private boolean                      configed3;
+    //configurationVariables
+//    private boolean                      iscontinuousRunA1;
+//    private int                          maxIterationsA1;
+//    private int                          updateIntervalsA1;
+//    private boolean                      iscontinuousRunA2;
+//    private int                          maxIterationsA2;
+//    private int                          updateIntervalsA2;
+//    private boolean                      iscontinuousRunA3;
+//    private int                          maxIterationsA3;
+//    private int                          updateIntervalsA3;
+//    private configurationClassificationWindow          configwindow;
+
+    private Button                       chosenConfig;
+//    private TextArea                     maxIterationsTextArea;
+//    private TextArea                     updateIntervalTextArea;
+//    private CheckBox                     continuousRunCheckBox;
+//    private Button                       doneButton;
+//    private Stage                        configStage;
+    private configurationClassificationWindow[] classificationList;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -126,6 +148,7 @@ public final class AppUI extends UITemplate {
 
     private void layout() {
         // TODO for homework 1
+        classificationList = new configurationClassificationWindow[3];
         PropertyManager manager = applicationTemplate.manager;
         appPane.getStylesheets().add(manager.getPropertyValue(CSS_PATH.name()));
         chart = new LineChart<>(new NumberAxis(),new NumberAxis());
@@ -195,6 +218,7 @@ public final class AppUI extends UITemplate {
         runButton = new Button();
         runButton.setGraphic(new ImageView(runImage));
         runButton.setVisible(false);
+        runButton.setDisable(true);
 
         cb1 = new Button();
         cb1.setGraphic(new ImageView(settingImage));
@@ -225,7 +249,7 @@ public final class AppUI extends UITemplate {
         algorithmListPaneH.setVisible(false);
         algorithmListPaneH.setSpacing(20);
 
-        vPane = new VBox();
+        vPane = new VBox(10);
         vPane.getChildren().add(title);
         vPane.getChildren().add(textArea);
         vPane.getChildren().add(editToggle);
@@ -242,7 +266,37 @@ public final class AppUI extends UITemplate {
         hPane.getChildren().add(chart);
 
         appPane.getChildren().add(hPane);
+
     }
+
+//    public void showConfig(){
+//        configStage = new Stage();
+//        VBox vBox1 = new VBox();
+//        VBox vBox2 = new VBox();
+//        HBox hBox = new HBox();
+//
+//        Text title = new Text("Algorithm Run Configuration");
+//        Text info = new Text();
+//        info.setText("Max Iterations :" +"\n\n" + "Update Intervals :" + "\n\n\n" + "Continuous Run? : " + "\n");
+//        doneButton = new Button("Done");
+//        vBox1.getChildren().add(info);
+//        vBox1.getChildren().add(doneButton);
+//
+//        maxIterationsTextArea = new TextArea();
+//        maxIterationsTextArea.setMaxSize(100,5);
+//        updateIntervalTextArea = new TextArea();
+//        updateIntervalTextArea.setMaxSize(100,5);
+//        continuousRunCheckBox = new CheckBox();
+//        vBox2.getChildren().addAll(maxIterationsTextArea, updateIntervalTextArea, continuousRunCheckBox);
+//
+////        hBox.getChildren().add(title);
+//        hBox.getChildren().add(vBox1);
+//        hBox.getChildren().add(vBox2);
+//
+//        Scene stageScene = new Scene(hBox, 500, 300);
+//        configStage.setScene(stageScene);
+//        configStage.show();
+//    }
 
     private void setWorkspaceActions() {
         // TODO for homework 1
@@ -325,7 +379,61 @@ public final class AppUI extends UITemplate {
         tb1.selectedProperty().addListener((observable, oldValue, newValue) -> {
             tb1.setVisible(false);
             tb2.setVisible(false);
+            runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
+        });
+        tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            tb1.setVisible(false);
+            tb2.setVisible(false);
+            runButton.setVisible(true);
+            algorithmListPaneH.setVisible(true);
+        });
+        cb1.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override public void handle(MouseEvent e) {
+                configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                try{
+                    if(!classificationList[0].equals(null)){
+                        configWindow.showConfig(cb1, classificationList[0].getMaxIterations(),  classificationList[0].getUpdateInterval(),  classificationList[0].getContinuous());
+                    }
+                }catch (Exception el){
+                    configWindow.showConfig(cb1,1,1,false);
+                }
+                classificationList[0] = configWindow;
+                runButton.setDisable(false);
+            }
+        });
+        cb2.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override public void handle(MouseEvent e) {
+                configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                try{
+                    if(!classificationList[1].equals(null)){
+                        configWindow.showConfig(cb1, classificationList[1].getMaxIterations(),  classificationList[1].getUpdateInterval(),  classificationList[1].getContinuous());
+                    }
+                }catch (Exception el){
+                    configWindow.showConfig(cb1,1,1,false);
+                }
+                classificationList[1] = configWindow;
+                runButton.setDisable(false);
+            }
+        });
+        cb3.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override public void handle(MouseEvent e) {
+                configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                try{
+                    if(!classificationList[2].equals(null)){
+                        configWindow.showConfig(cb1, classificationList[2].getMaxIterations(),  classificationList[2].getUpdateInterval(),  classificationList[2].getContinuous());
+                    }
+                }catch (Exception el){
+                    configWindow.showConfig(cb1,1,1,false);
+                }
+                classificationList[2] = configWindow;
+                runButton.setDisable(false);
+            }
+        });
+        runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override public void handle(MouseEvent e) {
+                System.out.println(classificationList[1].getMaxIterations() + "asd");
+            }
         });
     }
 
@@ -363,5 +471,17 @@ public final class AppUI extends UITemplate {
 
     public Text getAlgorithimTitle(){
         return algorithmTitle;
+    }
+
+    public Button getCb1(){
+        return cb1;
+    }
+
+    public Button getCb2(){
+        return cb2;
+    }
+
+    public Button getCb3(){
+        return cb3;
     }
 }

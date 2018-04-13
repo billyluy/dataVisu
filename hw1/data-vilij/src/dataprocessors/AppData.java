@@ -62,6 +62,10 @@ public class AppData implements DataComponent {
                 ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(true);
                 ((AppUI)applicationTemplate.getUIComponent()).getTb1().setVisible(true);
                 ((AppUI)applicationTemplate.getUIComponent()).getTb2().setVisible(true);
+                /*
+                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb2());
+                */
                 ((AppUI)applicationTemplate.getUIComponent()).getTb1().setDisable(false);
                 ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
                 ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
