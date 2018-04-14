@@ -4,6 +4,9 @@ import actions.AppActions;
 import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;
 import dataprocessors.configurationClassificationWindow;
+import dataprocessors.configurationClusteringWindow;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -64,28 +67,12 @@ public final class AppUI extends UITemplate {
     private Button                       cb2;
     private Button                       cb3;
     private Button                       runButton;
-    private boolean                      configed1;
-    private boolean                      configed2;
-    private boolean                      configed3;
-    //configurationVariables
-//    private boolean                      iscontinuousRunA1;
-//    private int                          maxIterationsA1;
-//    private int                          updateIntervalsA1;
-//    private boolean                      iscontinuousRunA2;
-//    private int                          maxIterationsA2;
-//    private int                          updateIntervalsA2;
-//    private boolean                      iscontinuousRunA3;
-//    private int                          maxIterationsA3;
-//    private int                          updateIntervalsA3;
-//    private configurationClassificationWindow          configwindow;
-
-    private Button                       chosenConfig;
-//    private TextArea                     maxIterationsTextArea;
-//    private TextArea                     updateIntervalTextArea;
-//    private CheckBox                     continuousRunCheckBox;
-//    private Button                       doneButton;
-//    private Stage                        configStage;
+    private ToggleButton                   algorType;
     private configurationClassificationWindow[] classificationList;
+    private boolean[]                      isClassificationConfigedList;
+    private configurationClusteringWindow[] clusteringList;
+    private boolean[]                      isClusteringConfigedList;
+    private ToggleGroup                  algorList;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -149,6 +136,9 @@ public final class AppUI extends UITemplate {
     private void layout() {
         // TODO for homework 1
         classificationList = new configurationClassificationWindow[3];
+        isClassificationConfigedList = new boolean[3];
+        clusteringList = new configurationClusteringWindow[3];
+        isClusteringConfigedList = new boolean[3];
         PropertyManager manager = applicationTemplate.manager;
         appPane.getStylesheets().add(manager.getPropertyValue(CSS_PATH.name()));
         chart = new LineChart<>(new NumberAxis(),new NumberAxis());
@@ -175,18 +165,6 @@ public final class AppUI extends UITemplate {
         algorithmTitle = new Text();
         algorithmTitle.setText("Algorithm Type");
         algorithmTitle.setVisible(false);
-        /*
-        listView = new ListView();
-        ObservableList<String> types = FXCollections.observableArrayList(
-                "Classification","Clustering");
-        listView = new ListView(types);
-        listView.setEditable(true);
-        listView.setCellFactory(TextFieldListCell.forListView());
-        listView.getSelectionModel().selectFirst();
-
-        listView.setMaxHeight(60);
-        listView.setVisible(false);
-        */
         final ToggleGroup algoTypes = new ToggleGroup();
 
         tb1 = new ToggleButton("Classification");
@@ -198,19 +176,16 @@ public final class AppUI extends UITemplate {
         tb2.setToggleGroup(algoTypes);
         tb2.setVisible(false);
 
-        final ToggleGroup algorList = new ToggleGroup();
+        algorList = new ToggleGroup();
 
         rb1 = new RadioButton("A");
         rb1.setToggleGroup(algorList);
-//        rb1.setVisible(false);
 
         rb2 = new RadioButton("B");
         rb2.setToggleGroup(algorList);
-//        rb2.setVisible(false);
 
         rb3 = new RadioButton("C");
         rb3.setToggleGroup(algorList);
-//        rb3.setVisible(false);
 
         Image settingImage = new Image("/gui/icons/settingIcon.png",20,20,true,false);
         Image runImage = new Image("/gui/icons/runIcon.png",20,20,true,false);
@@ -268,35 +243,6 @@ public final class AppUI extends UITemplate {
         appPane.getChildren().add(hPane);
 
     }
-
-//    public void showConfig(){
-//        configStage = new Stage();
-//        VBox vBox1 = new VBox();
-//        VBox vBox2 = new VBox();
-//        HBox hBox = new HBox();
-//
-//        Text title = new Text("Algorithm Run Configuration");
-//        Text info = new Text();
-//        info.setText("Max Iterations :" +"\n\n" + "Update Intervals :" + "\n\n\n" + "Continuous Run? : " + "\n");
-//        doneButton = new Button("Done");
-//        vBox1.getChildren().add(info);
-//        vBox1.getChildren().add(doneButton);
-//
-//        maxIterationsTextArea = new TextArea();
-//        maxIterationsTextArea.setMaxSize(100,5);
-//        updateIntervalTextArea = new TextArea();
-//        updateIntervalTextArea.setMaxSize(100,5);
-//        continuousRunCheckBox = new CheckBox();
-//        vBox2.getChildren().addAll(maxIterationsTextArea, updateIntervalTextArea, continuousRunCheckBox);
-//
-////        hBox.getChildren().add(title);
-//        hBox.getChildren().add(vBox1);
-//        hBox.getChildren().add(vBox2);
-//
-//        Scene stageScene = new Scene(hBox, 500, 300);
-//        configStage.setScene(stageScene);
-//        configStage.show();
-//    }
 
     private void setWorkspaceActions() {
         // TODO for homework 1
@@ -381,53 +327,126 @@ public final class AppUI extends UITemplate {
             tb2.setVisible(false);
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
+            algorType = tb1;
         });
         tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
             tb1.setVisible(false);
             tb2.setVisible(false);
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
+            algorType = tb2;
         });
         cb1.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent e) {
-                configurationClassificationWindow configWindow = new configurationClassificationWindow();
-                try{
-                    if(!classificationList[0].equals(null)){
+                if(algorType.equals(tb1)){
+                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                    if(!isClassificationConfigedList[0]){
+                        configWindow.showConfig(cb1,1,1,false);
+                        isClassificationConfigedList[0] = true;
+                    }else{
                         configWindow.showConfig(cb1, classificationList[0].getMaxIterations(),  classificationList[0].getUpdateInterval(),  classificationList[0].getContinuous());
                     }
-                }catch (Exception el){
-                    configWindow.showConfig(cb1,1,1,false);
+                    if(configWindow != (null)){
+                        classificationList[0] = configWindow;
+                    }
+                }else if(algorType.equals(tb2)){
+                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
+                    if(!isClusteringConfigedList[0]){
+                        configWindow.showConfig(cb1,1,1,1,false);
+                        isClusteringConfigedList[0] = true;
+                    }else{
+                        configWindow.showConfig(cb1, clusteringList[0].getMaxIterations(),  clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(),  clusteringList[0].getContinuous());
+                    }
+                    if(configWindow != (null)){
+                        clusteringList[0] = configWindow;
+                    }
                 }
-                classificationList[0] = configWindow;
-                runButton.setDisable(false);
             }
         });
         cb2.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent e) {
-                configurationClassificationWindow configWindow = new configurationClassificationWindow();
-                try{
-                    if(!classificationList[1].equals(null)){
+                if(algorType.equals(tb1)){
+                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                    if(!isClassificationConfigedList[1]){
+                        configWindow.showConfig(cb1,1,1,false);
+                        isClassificationConfigedList[1] = true;
+                    }else{
                         configWindow.showConfig(cb1, classificationList[1].getMaxIterations(),  classificationList[1].getUpdateInterval(),  classificationList[1].getContinuous());
                     }
-                }catch (Exception el){
-                    configWindow.showConfig(cb1,1,1,false);
+                    if(configWindow != (null)){
+                        classificationList[1] = configWindow;
+                    }
+                }else if(algorType.equals(tb2)){
+                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
+                    if(!isClusteringConfigedList[1]){
+                        configWindow.showConfig(cb1,1,1,1,false);
+                        isClusteringConfigedList[1] = true;
+                    }else{
+                        configWindow.showConfig(cb1, clusteringList[1].getMaxIterations(),  clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(),  clusteringList[1].getContinuous());
+                    }
+                    if(configWindow != (null)){
+                        clusteringList[1] = configWindow;
+                    }
                 }
-                classificationList[1] = configWindow;
-                runButton.setDisable(false);
             }
         });
         cb3.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override public void handle(MouseEvent e) {
-                configurationClassificationWindow configWindow = new configurationClassificationWindow();
-                try{
-                    if(!classificationList[2].equals(null)){
+                if(algorType.equals(tb1)){
+                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                    if(!isClassificationConfigedList[2]){
+                        configWindow.showConfig(cb1,1,1,false);
+                        isClassificationConfigedList[2] = true;
+                    }else{
                         configWindow.showConfig(cb1, classificationList[2].getMaxIterations(),  classificationList[2].getUpdateInterval(),  classificationList[2].getContinuous());
                     }
-                }catch (Exception el){
-                    configWindow.showConfig(cb1,1,1,false);
+                    if(configWindow != (null)){
+                        classificationList[2] = configWindow;
+                    }
+                }else if(algorType.equals(tb2)){
+                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
+                    if(!isClusteringConfigedList[2]){
+                        configWindow.showConfig(cb1,1,1,1,false);
+                        isClusteringConfigedList[2] = true;
+                    }else{
+                        configWindow.showConfig(cb1, clusteringList[2].getMaxIterations(),  clusteringList[2].getUpdateInterval(), clusteringList[2].getNumLabel(),  clusteringList[2].getContinuous());
+                    }
+                    if(configWindow != (null)){
+                        clusteringList[2] = configWindow;
+                    }
                 }
-                classificationList[2] = configWindow;
-                runButton.setDisable(false);
+            }
+        });
+        algorList.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+            public void changed(ObservableValue<? extends Toggle> ov, Toggle toggle, Toggle new_toggle) {
+                if(algorType.equals(tb1)){
+                    if(new_toggle.equals(rb1)&&classificationList[0]!=null){
+                        runButton.setDisable(false);
+                    }
+                    if(new_toggle.equals(rb2)&&classificationList[1]!=null){
+                        runButton.setDisable(false);
+                    }
+                    if(new_toggle.equals(rb3)&&classificationList[2]!=null){
+                        runButton.setDisable(false);
+                    }
+                    else{
+                        runButton.setDisable(true);
+                    }
+                }
+                if(algorType.equals(tb2)){
+                    if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
+                        runButton.setDisable(false);
+                    }
+                    if(new_toggle.equals(rb2)&&clusteringList[1]!=null){
+                        runButton.setDisable(false);
+                    }
+                    if(new_toggle.equals(rb3)&&clusteringList[2]!=null){
+                        runButton.setDisable(false);
+                    }
+                    else{
+                        runButton.setDisable(true);
+                    }
+                }
             }
         });
         runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
