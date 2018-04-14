@@ -93,7 +93,7 @@ public final class TSDProcessor {
     public boolean twoNonNulls(){
         int numNonNulls = 0;
         for(Object label : uniqueLabels){
-            if(!label.equals(null)){
+            if(!label.equals("null")){
                 numNonNulls++;
             }
         }
@@ -102,6 +102,7 @@ public final class TSDProcessor {
         }else{
             return false;
         }
+
     }
 
     public boolean isDupe(String name){

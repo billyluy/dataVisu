@@ -12,6 +12,22 @@ public enum AppPropertyTypes {
     /* resource files and folders */
     DATA_RESOURCE_PATH,
     CSS_PATH,
+    RUN_PATH,
+    SETTING_PATH,
+    APPLICATION_TITLE,
+    CHECK_TITLE,
+    ALGOR1,
+    ALGOR2,
+    DONE,
+    EDIT,
+    METADATA1,
+    METADATA2,
+    METADATA3,
+    ALGORTITLE,
+    INFO1,
+    INFO2,
+    INFO3,
+    INFO4,
 
     /* user interface icon file names */
     SCREENSHOT_ICON,

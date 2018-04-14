@@ -44,20 +44,6 @@ public final class AppActions implements ActionComponent {
     public void handleNewRequest() {
         // TODO for homework 1
         PropertyManager manager = applicationTemplate.manager;
-        /*
-        try {
-            if(promptToSave()){
-                ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
-                applicationTemplate.getUIComponent().clear();
-                ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().clear();
-                ((AppUI) applicationTemplate.getUIComponent()).getTextArea().clear();
-                ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
-                dataFilePath = null;
-            }
-        } catch (IOException e) {
-            (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
-        }
-        */
         ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
         applicationTemplate.getUIComponent().clear();
         ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
@@ -69,13 +55,19 @@ public final class AppActions implements ActionComponent {
         ((AppUI) applicationTemplate.getUIComponent()).getVPane().setVisible(true);
         ((AppUI) applicationTemplate.getUIComponent()).getEditToggle().setVisible(true);
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(false);
-        ((AppUI) applicationTemplate.getUIComponent()).getTb1().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb2().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getTb1().setVisible(false);
+//        ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+//        ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb2());
         ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
-        ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
-
-
+        ((AppUI) applicationTemplate.getUIComponent()).getRb1().setSelected(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getRb2().setSelected(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getRb3().setSelected(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getAlgorithmListPaneH().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setVisible(false);
+        ((AppUI) applicationTemplate.getUIComponent()).getEditToggle().setText(manager.getPropertyValue(DONE.name()));
         dataFilePath = null;
 
     }

@@ -62,13 +62,18 @@ public class AppData implements DataComponent {
                 ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(true);
                 ((AppUI)applicationTemplate.getUIComponent()).getTb1().setVisible(true);
                 ((AppUI)applicationTemplate.getUIComponent()).getTb2().setVisible(true);
-                /*
-                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb1());
-                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb2());
-                */
+
+//                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+//                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb2());
+
                 ((AppUI)applicationTemplate.getUIComponent()).getTb1().setDisable(false);
                 ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
                 ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
+                ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(true);
+                ((AppUI) applicationTemplate.getUIComponent()).getAlgorithmListPaneH().setVisible(false);
+                ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setVisible(false);
+                ((AppUI) applicationTemplate.getUIComponent()).getTb1().setVisible(true);
+                ((AppUI) applicationTemplate.getUIComponent()).getTb2().setVisible(true);
                 if(((AppData)applicationTemplate.getDataComponent()).getProcessor().twoNonNulls()){
                     ((AppUI) applicationTemplate.getUIComponent()).getTb1().setDisable(false);
                 }else{
@@ -117,8 +122,9 @@ public class AppData implements DataComponent {
     }
 
     public void loadMetaData(String location){
+        PropertyManager manager = applicationTemplate.manager;
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(processor.getInstanceSize() + " instances with " + processor.getUniqueLabels().size() + " labels loaded from: \n"
+        stringBuilder.append(processor.getInstanceSize() + manager.getPropertyValue(METADATA1.name()) + processor.getUniqueLabels().size() + manager.getPropertyValue(METADATA2.name()) + "\n"
                 + location + "\n");
         for(Object labels : processor.getUniqueLabels()){
             stringBuilder.append("\t -" + labels.toString() + "\n");
@@ -148,15 +154,15 @@ public class AppData implements DataComponent {
             }
             averageY = averageY /(processor.getDataPoints().values().size());
 
-            XYChart.Series<Number,Number> series2 = new XYChart.Series<>();
-            series2.setName("Average Y-Value");
-            series2.getData().add(new XYChart.Data<>(minX, averageY));
-            series2.getData().add(new XYChart.Data<>(maxX, averageY));
-            ((AppUI) applicationTemplate.getUIComponent()).getChart().getData().add(series2);
-            for (Object data: series2.getData()) {
-                ((XYChart.Data)data).getNode().setVisible(false);
-                series2.getNode().setId("AverageId");
-            }
+//            XYChart.Series<Number,Number> series2 = new XYChart.Series<>();
+//            series2.setName("Average Y-Value");
+//            series2.getData().add(new XYChart.Data<>(minX, averageY));
+//            series2.getData().add(new XYChart.Data<>(maxX, averageY));
+//            ((AppUI) applicationTemplate.getUIComponent()).getChart().getData().add(series2);
+//            for (Object data: series2.getData()) {
+//                ((XYChart.Data)data).getNode().setVisible(false);
+//                series2.getNode().setId("AverageId");
+//            }
             ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
         }
     }

@@ -90,7 +90,7 @@ public class configurationClusteringWindow {
                         updateIntervalTextArea.setText("1");
                     }
                 }
-                String e = updateIntervalTextArea.getText().trim();
+                String e = numLabelTextArea.getText().trim();
                 if((!e.equals(""))){
                     if(Integer.parseInt(numLabelTextArea.getText())<1){
                         numLabelTextArea.setText("1");

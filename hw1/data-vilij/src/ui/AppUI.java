@@ -159,20 +159,20 @@ public final class AppUI extends UITemplate {
         textArea2 = new TextArea();
         displayButton = new Button();
         editToggle = new Button();
-        editToggle.setText("Done");
+        editToggle.setText(manager.getPropertyValue(DONE.name()));
         displayButton.setText(manager.getPropertyValue(DISPLAY_BUTTON.name()));
-        checkBox = new CheckBox("Read-Only");
+        checkBox = new CheckBox(manager.getPropertyValue(CHECK_TITLE.name()));
         algorithmTitle = new Text();
-        algorithmTitle.setText("Algorithm Type");
+        algorithmTitle.setText(manager.getPropertyValue(APPLICATION_TITLE.name()));
         algorithmTitle.setVisible(false);
         final ToggleGroup algoTypes = new ToggleGroup();
 
-        tb1 = new ToggleButton("Classification");
+        tb1 = new ToggleButton(manager.getPropertyValue(ALGOR1.name()));
         tb1.setToggleGroup(algoTypes);
         tb1.setVisible(false);
         tb1.setDisable(true);
 
-        tb2 = new ToggleButton("Clustering");
+        tb2 = new ToggleButton(manager.getPropertyValue(ALGOR2.name()));
         tb2.setToggleGroup(algoTypes);
         tb2.setVisible(false);
 
@@ -187,8 +187,8 @@ public final class AppUI extends UITemplate {
         rb3 = new RadioButton("C");
         rb3.setToggleGroup(algorList);
 
-        Image settingImage = new Image("/gui/icons/settingIcon.png",20,20,true,false);
-        Image runImage = new Image("/gui/icons/runIcon.png",20,20,true,false);
+        Image settingImage = new Image(manager.getPropertyValue(SETTING_PATH.name()),20,20,true,false);
+        Image runImage = new Image(manager.getPropertyValue(RUN_PATH.name()),20,20,true,false);
 
         runButton = new Button();
         runButton.setGraphic(new ImageView(runImage));
@@ -253,22 +253,27 @@ public final class AppUI extends UITemplate {
             ((AppData) applicationTemplate.getDataComponent()).loadData(s);
         });
         editToggle.setOnAction(e -> {
-            if(editToggle.getText().equals("Done")){
+            if(editToggle.getText().equals(manager.getPropertyValue(DONE.name()))){
                 try{
                     inputDataText.setText("");
                     processor.processString(textArea.getText());
                     String s = "";
-                    s += processor.getInstanceSize() + " instances with " + processor.getUniqueLabels().size() + " labels:" +"\n";
+                    s += processor.getInstanceSize() + manager.getPropertyValue(METADATA1.name()) + processor.getUniqueLabels().size() + manager.getPropertyValue(METADATA3.name()) +"\n";
                     for(Object labels : processor.getUniqueLabels()){
                         s += "\t -" + labels.toString() + "\n";
                     }
                     inputDataText.setText(s);
-                    editToggle.setText("Edit");
+                    editToggle.setText(manager.getPropertyValue(EDIT.name()));
+//                    ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+//                    ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb2());
+                    tb1.setSelected(false);
+                    tb2.setSelected(false);
                     tb1.setVisible(true);
                     tb2.setVisible(true);
+                    runButton.setVisible(false);
+                    getAlgorithmListPaneH().setVisible(false);
                     algorithmTitle.setVisible(true);
                     textArea.setDisable(true);
-                    System.out.println(((AppData)applicationTemplate.getDataComponent()).getProcessor().twoNonNulls());
                     if(((AppData)applicationTemplate.getDataComponent()).getProcessor().twoNonNulls()){
                         tb1.setDisable(false);
                     }else{
@@ -284,13 +289,22 @@ public final class AppUI extends UITemplate {
                     (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(ERROR_TITLE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
                 }
             }
-            }else if(editToggle.getText().equals("Edit")){
+            }else if(editToggle.getText().equals(manager.getPropertyValue(EDIT.name()))){
                 ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
                 inputDataText.setText("");
-                editToggle.setText("Done");
-                rb1.setVisible(false);
-                rb2.setVisible(false);
+                editToggle.setText(manager.getPropertyValue(DONE.name()));
+                rb1.setVisible(true);
+                rb2.setVisible(true);
+                tb1.setVisible(false);
+                tb2.setVisible(false);
+//                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+//                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb2());
                 algorithmTitle.setVisible(false);
+                algorithmListPaneH.setVisible(false);
+                runButton.setVisible(false);
+                rb1.setSelected(false);
+                rb2.setSelected(false);
+                rb3.setSelected(false);
                 textArea.setDisable(false);
             }
         });
@@ -325,6 +339,8 @@ public final class AppUI extends UITemplate {
         tb1.selectedProperty().addListener((observable, oldValue, newValue) -> {
             tb1.setVisible(false);
             tb2.setVisible(false);
+//            ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+//            ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb2());
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
             algorType = tb1;
@@ -332,6 +348,8 @@ public final class AppUI extends UITemplate {
         tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
             tb1.setVisible(false);
             tb2.setVisible(false);
+//            ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb1());
+//            ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb2());
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
             algorType = tb2;
@@ -419,39 +437,39 @@ public final class AppUI extends UITemplate {
         });
         algorList.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
             public void changed(ObservableValue<? extends Toggle> ov, Toggle toggle, Toggle new_toggle) {
-                if(algorType.equals(tb1)){
-                    if(new_toggle.equals(rb1)&&classificationList[0]!=null){
-                        runButton.setDisable(false);
+                try{
+                    if(algorType.equals(tb1)){
+                        if(new_toggle.equals(rb1)&&classificationList[0]!=null){
+                            runButton.setDisable(false);
+                        }
+                        else if(new_toggle.equals(rb2)&&classificationList[1]!=null){
+                            runButton.setDisable(false);
+                        }
+                        else if(new_toggle.equals(rb3)&&classificationList[2]!=null){
+                            runButton.setDisable(false);
+                        }
+                        else{
+                            runButton.setDisable(true);
+                        }
                     }
-                    if(new_toggle.equals(rb2)&&classificationList[1]!=null){
-                        runButton.setDisable(false);
+                    if(algorType.equals(tb2)){
+                        if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
+                            runButton.setDisable(false);
+                        }
+                        else if(new_toggle.equals(rb2)&&clusteringList[1]!=null){
+                            runButton.setDisable(false);
+                        }
+                        else if(new_toggle.equals(rb3)&&clusteringList[2]!=null){
+                            runButton.setDisable(false);
+                        }
+                        else{
+                            runButton.setDisable(true);
+                        }
                     }
-                    if(new_toggle.equals(rb3)&&classificationList[2]!=null){
-                        runButton.setDisable(false);
-                    }
-                    else{
-                        runButton.setDisable(true);
-                    }
+                }catch(Exception el){
+                    runButton.setDisable(true);
                 }
-                if(algorType.equals(tb2)){
-                    if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
-                        runButton.setDisable(false);
-                    }
-                    if(new_toggle.equals(rb2)&&clusteringList[1]!=null){
-                        runButton.setDisable(false);
-                    }
-                    if(new_toggle.equals(rb3)&&clusteringList[2]!=null){
-                        runButton.setDisable(false);
-                    }
-                    else{
-                        runButton.setDisable(true);
-                    }
-                }
-            }
-        });
-        runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent e) {
-                System.out.println(classificationList[1].getMaxIterations() + "asd");
+
             }
         });
     }
@@ -492,15 +510,23 @@ public final class AppUI extends UITemplate {
         return algorithmTitle;
     }
 
-    public Button getCb1(){
-        return cb1;
+    public RadioButton getRb1(){
+        return rb1;
     }
 
-    public Button getCb2(){
-        return cb2;
+    public RadioButton getRb2(){
+        return rb2;
     }
 
-    public Button getCb3(){
-        return cb3;
+    public RadioButton getRb3(){
+        return rb3;
+    }
+
+    public Button getRunButton(){
+        return runButton;
+    }
+
+    public HBox getAlgorithmListPaneH(){
+        return algorithmListPaneH;
     }
 }

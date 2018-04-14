@@ -7,6 +7,8 @@ functionality within the main workspace. -->
         <!-- RESOURCE FILES AND FOLDERS -->
         <property name="DATA_RESOURCE_PATH" value="hw1\\data-vilij\\resources\\data"/>
         <property name="CSS_PATH" value="gui.css/style.css"/>
+        <property name="RUN_PATH" value="/gui/icons/runIcon.png"/>
+        <property name="SETTING_PATH" value="/gui/icons/settingIcon.png"/>
 
         <!-- USER INTERFACE ICON FILES -->
         <property name="SCREENSHOT_ICON" value="screenshot.png"/>
@@ -33,6 +35,21 @@ functionality within the main workspace. -->
 
         <!-- APPLICATION-SPECIFIC MESSAGE TITLES -->
         <property name="SAVE_UNSAVED_WORK_TITLE" value="Save Current Work"/>
+        <property name="APPLICATION_TITLE" value="Algorithm Type"/>
+        <property name="CHECK_TITLE" value="Read-Only"/>
+        <property name="ALGOR1" value="Classification"/>
+        <property name="ALGOR2" value="Clustering"/>
+        <property name="DONE" value="Done"/>
+        <property name="EDIT" value="Edit"/>
+        <property name="METADATA1" value=" instances with "/>
+        <property name="METADATA2" value=" labels loaded from: "/>
+        <property name="METADATA3" value=" labels : "/>
+        <property name="ALGORTITLE" value="Algorithm Run Configuration"/>
+        <property name="INFO1" value="Max Iterations :"/>
+        <property name="INFO2" value="Update Intervals :"/>
+        <property name="INFO3" value="Continuous Run? : "/>
+        <property name="INFO4" value="Number Of Labels:"/>
+
 
         <!-- APPLICATION-SPECIFIC MESSAGES -->
         <property name="SAVE_UNSAVED_WORK" value="Would you like to save current work?"/>

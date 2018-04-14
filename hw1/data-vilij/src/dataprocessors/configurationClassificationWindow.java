@@ -13,7 +13,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import ui.AppUI;
+import vilij.propertymanager.PropertyManager;
 import vilij.templates.ApplicationTemplate;
+
+import static settings.AppPropertyTypes.*;
 
 public class configurationClassificationWindow {
 
