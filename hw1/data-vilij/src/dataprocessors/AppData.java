@@ -26,10 +26,14 @@ public class AppData implements DataComponent {
     private TSDProcessor        processor;
     private ApplicationTemplate applicationTemplate;
     private StringBuilder       inputData;
+    private Double              maxX;
+    private Double              minX;
 
     public AppData(ApplicationTemplate applicationTemplate) {
         this.processor = new TSDProcessor();
         this.applicationTemplate = applicationTemplate;
+        minX = Double.MAX_VALUE;
+        maxX = Double.MIN_VALUE;
     }
 
     @Override
@@ -141,8 +145,6 @@ public class AppData implements DataComponent {
         processor.toChartData(((AppUI) applicationTemplate.getUIComponent()).getChart());
         if(!((AppUI) applicationTemplate.getUIComponent()).getChart().getData().isEmpty()){
             Double averageY = 0.0;
-            Double minX = Double.MAX_VALUE;
-            Double maxX = Double.MIN_VALUE;
             for(int i =0; i <processor.getDataPoints().values().size(); i++){
                 averageY += ((Point2D)processor.getDataPoints().values().toArray()[i]).getY();
                 if(minX > ((Point2D)processor.getDataPoints().values().toArray()[i]).getX()){
@@ -152,8 +154,7 @@ public class AppData implements DataComponent {
                     maxX = ((Point2D)processor.getDataPoints().values().toArray()[i]).getX();
                 }
             }
-            averageY = averageY /(processor.getDataPoints().values().size());
-
+//            averageY = averageY /(processor.getDataPoints().values().size());
 //            XYChart.Series<Number,Number> series2 = new XYChart.Series<>();
 //            series2.setName("Average Y-Value");
 //            series2.getData().add(new XYChart.Data<>(minX, averageY));
@@ -169,5 +170,13 @@ public class AppData implements DataComponent {
 
     public TSDProcessor getProcessor() {
         return processor;
+    }
+
+    public Double getMaxX(){
+        return maxX;
+    }
+
+    public Double getMinX(){
+        return minX;
     }
 }

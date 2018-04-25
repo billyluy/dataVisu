@@ -46,6 +46,7 @@ public final class AppActions implements ActionComponent {
         PropertyManager manager = applicationTemplate.manager;
         ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
         applicationTemplate.getUIComponent().clear();
+        ((AppUI)applicationTemplate.getUIComponent()).setIsLoad(false);
         ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
         ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().clear();
         ((AppUI) applicationTemplate.getUIComponent()).getTextArea().clear();
@@ -57,13 +58,9 @@ public final class AppActions implements ActionComponent {
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb2().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb1().setVisible(false);
-//        ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb1());
-//        ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().remove(((AppUI) applicationTemplate.getUIComponent()).getTb2());
         ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
         ((AppUI) applicationTemplate.getUIComponent()).getRb1().setSelected(false);
-        ((AppUI) applicationTemplate.getUIComponent()).getRb2().setSelected(false);
-        ((AppUI) applicationTemplate.getUIComponent()).getRb3().setSelected(false);
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithmListPaneH().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setVisible(false);
@@ -120,6 +117,7 @@ public final class AppActions implements ActionComponent {
         try{
             dataFilePath = file.toPath();
             applicationTemplate.getDataComponent().loadData(file.toPath());
+            ((AppUI)applicationTemplate.getUIComponent()).setIsLoad(true);
             ((AppUI)applicationTemplate.getUIComponent()).getEditToggle().setVisible(false);
             ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(true);
         } catch (NullPointerException e){
@@ -212,5 +210,9 @@ public final class AppActions implements ActionComponent {
         }else{
             return false;
         }
+    }
+
+    public Path getDataFilePath(){
+        return dataFilePath;
     }
 }
