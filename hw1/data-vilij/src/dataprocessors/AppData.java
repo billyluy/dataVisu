@@ -28,6 +28,7 @@ public class AppData implements DataComponent {
     private StringBuilder       inputData;
     private Double              maxX;
     private Double              minX;
+    private XYChart.Series<Number,Number> series2;
 
     public AppData(ApplicationTemplate applicationTemplate) {
         this.processor = new TSDProcessor();
@@ -66,10 +67,6 @@ public class AppData implements DataComponent {
                 ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(true);
                 ((AppUI)applicationTemplate.getUIComponent()).getTb1().setVisible(true);
                 ((AppUI)applicationTemplate.getUIComponent()).getTb2().setVisible(true);
-
-//                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb1());
-//                ((AppUI) applicationTemplate.getUIComponent()).getVPane().getChildren().add(((AppUI) applicationTemplate.getUIComponent()).getTb2());
-
                 ((AppUI)applicationTemplate.getUIComponent()).getTb1().setDisable(false);
                 ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
                 ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
@@ -144,9 +141,7 @@ public class AppData implements DataComponent {
     public void displayData() {
         processor.toChartData(((AppUI) applicationTemplate.getUIComponent()).getChart());
         if(!((AppUI) applicationTemplate.getUIComponent()).getChart().getData().isEmpty()){
-            Double averageY = 0.0;
             for(int i =0; i <processor.getDataPoints().values().size(); i++){
-                averageY += ((Point2D)processor.getDataPoints().values().toArray()[i]).getY();
                 if(minX > ((Point2D)processor.getDataPoints().values().toArray()[i]).getX()){
                     minX = ((Point2D)processor.getDataPoints().values().toArray()[i]).getX();
                 }
@@ -154,17 +149,18 @@ public class AppData implements DataComponent {
                     maxX = ((Point2D)processor.getDataPoints().values().toArray()[i]).getX();
                 }
             }
-//            averageY = averageY /(processor.getDataPoints().values().size());
-//            XYChart.Series<Number,Number> series2 = new XYChart.Series<>();
-//            series2.setName("Average Y-Value");
-//            series2.getData().add(new XYChart.Data<>(minX, averageY));
-//            series2.getData().add(new XYChart.Data<>(maxX, averageY));
-//            ((AppUI) applicationTemplate.getUIComponent()).getChart().getData().add(series2);
-//            for (Object data: series2.getData()) {
-//                ((XYChart.Data)data).getNode().setVisible(false);
-//                series2.getNode().setId("AverageId");
-//            }
             ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
+        }
+    }
+
+    public void addTwoPointLine(Double y1, Double y2){
+        series2 = new XYChart.Series<>();
+        series2.getData().add(new XYChart.Data<>(minX, y1));
+        series2.getData().add(new XYChart.Data<>(maxX, y2));
+        ((AppUI) applicationTemplate.getUIComponent()).getChart().getData().add(series2);
+        for (Object data: series2.getData()) {
+            ((XYChart.Data)data).getNode().setVisible(false);
+            series2.getNode().setId("AverageId");
         }
     }
 

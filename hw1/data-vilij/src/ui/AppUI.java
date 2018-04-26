@@ -78,6 +78,7 @@ public final class AppUI extends UITemplate {
     private RandomClassifier             randomClassifier;
     private DataSet                      dataSet;
     private Boolean                      isLoad;
+    private Thread                       thread2;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -251,10 +252,6 @@ public final class AppUI extends UITemplate {
         // TODO for homework 1
         TSDProcessor processor = ((AppData)applicationTemplate.getDataComponent()).getProcessor();
         PropertyManager manager = applicationTemplate.manager;
-        runButton.setOnAction(e -> {
-            String s = textArea.getText()+ textArea2.getText();
-            ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-        });
         editToggle.setOnAction(e -> {
             if(editToggle.getText().equals(manager.getPropertyValue(DONE.name()))){
                 try{
@@ -336,51 +333,51 @@ public final class AppUI extends UITemplate {
             textArea.setDisable(hasNewText);
         });
         tb1.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            tb1.setVisible(false);
-            tb2.setVisible(false);
+//            tb1.setVisible(false);
+//            tb2.setVisible(false);
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
             algorType = tb1;
             rb1.setText("Random"+algorType.getText());
+            rb1.setSelected(false);
         });
         tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            tb1.setVisible(false);
-            tb2.setVisible(false);
+//            tb1.setVisible(false);
+//            tb2.setVisible(false);
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
             algorType = tb2;
             rb1.setText("Random"+algorType.getText());
+            rb1.setSelected(false);
         });
-        cb1.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent e) {
-                if(algorType.equals(tb1)){
-                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
-                    if(!isClassificationConfigedList[0]){
-                        configWindow.showConfig(cb1,1,1,false);
-                        isClassificationConfigedList[0] = true;
-                    }else{
-                        configWindow.showConfig(cb1, classificationList[0].getMaxIterations(),  classificationList[0].getUpdateInterval(),  classificationList[0].getContinuous());
-                    }
-                    if(configWindow != (null)){
-                        classificationList[0] = configWindow;
-                    }
-                    if(rb1.isSelected()){
-                        runButton.setDisable(false);
-                    }
-                }else if(algorType.equals(tb2)){
-                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
-                    if(!isClusteringConfigedList[0]){
-                        configWindow.showConfig(cb1,1,1,1,false);
-                        isClusteringConfigedList[0] = true;
-                    }else{
-                        configWindow.showConfig(cb1, clusteringList[0].getMaxIterations(),  clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(),  clusteringList[0].getContinuous());
-                    }
-                    if(configWindow != (null)){
-                        clusteringList[0] = configWindow;
-                    }
-                    if(rb1.isSelected()){
-                        runButton.setDisable(false);
-                    }
+        cb1.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if(algorType.equals(tb1)){
+                configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                if(!isClassificationConfigedList[0]){
+                    configWindow.showConfig(cb1,1,1,false);
+                    isClassificationConfigedList[0] = true;
+                }else{
+                    configWindow.showConfig(cb1, classificationList[0].getMaxIterations(),  classificationList[0].getUpdateInterval(),  classificationList[0].getContinuous());
+                }
+                if(configWindow != (null)){
+                    classificationList[0] = configWindow;
+                }
+                if(rb1.isSelected()){
+                    runButton.setDisable(false);
+                }
+            }else if(algorType.equals(tb2)){
+                configurationClusteringWindow configWindow = new configurationClusteringWindow();
+                if(!isClusteringConfigedList[0]){
+                    configWindow.showConfig(cb1,1,1,1,false);
+                    isClusteringConfigedList[0] = true;
+                }else{
+                    configWindow.showConfig(cb1, clusteringList[0].getMaxIterations(),  clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(),  clusteringList[0].getContinuous());
+                }
+                if(configWindow != (null)){
+                    clusteringList[0] = configWindow;
+                }
+                if(rb1.isSelected()){
+                    runButton.setDisable(false);
                 }
             }
         });
@@ -438,68 +435,52 @@ public final class AppUI extends UITemplate {
 //                }
 //            }
 //        });
-        algorList.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
-            public void changed(ObservableValue<? extends Toggle> ov, Toggle toggle, Toggle new_toggle) {
-                try{
-                    if(algorType.equals(tb1)){
-                        if(new_toggle.equals(rb1)&&classificationList[0]!=null){
-                            runButton.setDisable(false);
-                        }
+        algorList.selectedToggleProperty().addListener((ov, toggle, new_toggle) -> {
+            try{
+                if(algorType.equals(tb1)){
+                    if(new_toggle.equals(rb1)&&classificationList[0]!=null){
+                        runButton.setDisable(false);
+                    }
 //                        else if(new_toggle.equals(rb2)&&classificationList[1]!=null){
 //                            runButton.setDisable(false);
 //                        }
 //                        else if(new_toggle.equals(rb3)&&classificationList[2]!=null){
 //                            runButton.setDisable(false);
 //                        }
-                        else{
-                            runButton.setDisable(true);
-                        }
+                    else{
+                        runButton.setDisable(true);
                     }
-                    if(algorType.equals(tb2)){
-                        if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
-                            runButton.setDisable(false);
-                        }
+                }
+                if(algorType.equals(tb2)){
+                    if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
+                        runButton.setDisable(false);
+                    }
 //                        else if(new_toggle.equals(rb2)&&clusteringList[1]!=null){
 //                            runButton.setDisable(false);
 //                        }
 //                        else if(new_toggle.equals(rb3)&&clusteringList[2]!=null){
 //                            runButton.setDisable(false);
 //                        }
-                        else{
-                            runButton.setDisable(true);
-                        }
+                    else{
+                        runButton.setDisable(true);
                     }
-                }catch(Exception el){
-                    runButton.setDisable(true);
                 }
-
+            }catch(Exception el){
+                runButton.setDisable(true);
             }
+
         });
-        runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent e) {
-                /*
-                should probably do this all in the random classifier class instead of this method. This method should only just call the runButton to start?
-                 */
-/*
-                if(isLoad){
-                    try {
-                        dataSet.fromTSDFile(((AppActions)(applicationTemplate.getActionComponent())).getDataFilePath());
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }else{
-                    for (String line: textArea.getText().split("\n")) {
-                        try {
-                            dataSet.addInstance(line);
-                        } catch (DataSet.InvalidDataNameException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                }
-*/
-                randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
-                randomClassifier.setApplicationTemplate(applicationTemplate);
-                randomClassifier.run();
+        runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
+            thread2 = new Thread(randomClassifier);
+            randomClassifier.setApplicationTemplate(applicationTemplate);
+            thread2.start();
+            while(thread2.isAlive()){
+                ((AppData)applicationTemplate.getDataComponent()).clear();
+                System.out.println("thread is alive");
+                String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
+                ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+                thread2.run();
             }
         });
     }
@@ -508,6 +489,10 @@ public final class AppUI extends UITemplate {
 
     public TextArea getTextArea(){
         return textArea;
+    }
+
+    public Thread getThread2(){
+        return thread2;
     }
 
     public TextArea getTextArea2(){

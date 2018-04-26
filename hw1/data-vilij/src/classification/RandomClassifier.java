@@ -55,34 +55,39 @@ public class RandomClassifier extends Classifier {
         this.maxIterations = maxIterations;
         this.updateInterval = updateInterval;
         this.tocontinue = new AtomicBoolean(tocontinue);
-//        this.applicationTemplate = applicationTemaple;
     }
 
     public void setApplicationTemplate(ApplicationTemplate applicationTemplate){
         this.applicationTemplate = applicationTemplate;
-        System.out.println(((AppUI)applicationTemplate.getUIComponent()).getAlgorithimTitle().getText());
     }
 
     @Override
     public void run() {
+        System.out.println("running");
         /*
         Most code should be done here
-        (Ax+By=C)
          */
         for (int i = 1; i <= maxIterations && tocontinue(); i++) {
-            System.out.println("run");
             int xCoefficient =  new Long(-1 * Math.round((2 * RAND.nextDouble() - 1) * 10)).intValue();
             int yCoefficient = 10;
             int constant     = RAND.nextInt(11);
-
-            y1 = ((constant-(xCoefficient*((AppData)applicationTemplate.getDataComponent()).getMinX()))/yCoefficient);
-            y2 = ((constant-(xCoefficient*((AppData)applicationTemplate.getDataComponent()).getMaxX()))/yCoefficient);
-
-            System.out.println("min: "+((AppData)applicationTemplate.getDataComponent()).getMinX() + "," + y1);
-            System.out.println("max: "+((AppData)applicationTemplate.getDataComponent()).getMaxX() + "," + y2);
-
             // this is the real output of the classifier
             output = Arrays.asList(xCoefficient, yCoefficient, constant);
+            System.out.println(((AppData)applicationTemplate.getDataComponent()).getMinX());
+            y1 = (constant-(xCoefficient*((AppData)applicationTemplate.getDataComponent()).getMinX()))/yCoefficient;
+            y2 = (constant-(xCoefficient*((AppData)applicationTemplate.getDataComponent()).getMaxX()))/yCoefficient;
+            System.out.println("min: "+((AppData)applicationTemplate.getDataComponent()).getMinX() + "," + y1);
+            System.out.println("max: "+((AppData)applicationTemplate.getDataComponent()).getMaxX() + "," + y2);
+            ((AppData)applicationTemplate.getDataComponent()).addTwoPointLine(y1,y2);
+            try {
+                Thread.sleep(1000);
+                System.out.println("thread sleep");
+                /*
+                    need wait and run?
+                 */
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             // everything below is just for internal viewing of how the output is changing
             // in the final project, such changes will be dynamically visible in the UI
@@ -96,19 +101,6 @@ public class RandomClassifier extends Classifier {
                 break;
             }
         }
-
-        Thread thread1 = new Thread();
-        /*
-        the threading should be in appui, thread acalls run on randomclassifier. pausing and waiting etc.
-        try {
-            System.out.println("sleep");
-            thread1.sleep(500);
-            System.out.println("wake");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
-
     }
 
     // for internal viewing only
