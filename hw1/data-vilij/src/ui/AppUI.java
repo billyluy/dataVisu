@@ -483,10 +483,10 @@ public final class AppUI extends UITemplate {
                 ((AppData)applicationTemplate.getDataComponent()).clear();
                 String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
                 ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-//            runButton.setDisable(true);
-                synchronized (this){
-                    thread2.start();
-                    notifyAll();
+                thread2.start();
+            }else{
+                synchronized (randomClassifier){
+                    randomClassifier.notify();
                 }
             }
         });
@@ -496,6 +496,14 @@ public final class AppUI extends UITemplate {
 
     public TextArea getTextArea(){
         return textArea;
+    }
+
+    public Boolean getRunStarted(){
+        return runStarted;
+    }
+
+    public void setRunStarted(Boolean bol){
+        runStarted = bol;
     }
 
     public Thread getThread2(){

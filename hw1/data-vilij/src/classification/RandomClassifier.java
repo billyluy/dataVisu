@@ -4,6 +4,7 @@ import algorithms.Classifier;
 import data.DataSet;
 import dataprocessors.AppData;
 import javafx.application.Platform;
+import sun.security.krb5.internal.APOptions;
 import ui.AppUI;
 import vilij.templates.ApplicationTemplate;
 
@@ -115,15 +116,33 @@ public class RandomClassifier extends Classifier {
             y1 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMinX())) / yCoefficient;
             y2 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMaxX())) / yCoefficient;
             count++;
+            System.out.println(count);
             if (count % updateInterval == 0) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println(count);
+                        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().remove(((AppData) applicationTemplate.getDataComponent()).getseries2());
+                    }
+                });
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("moded"+count);
                         ((AppData) applicationTemplate.getDataComponent()).addTwoPointLine(y1, y2);
                     }
                 });
+                if(count >= maxIterations){
+                    break;
+                }
                 try {
+                    System.out.println("sleep");
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("disable run but");
+                            ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setDisable(true);
+                        }
+                    });
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -137,7 +156,7 @@ public class RandomClassifier extends Classifier {
                 try {
                     System.out.println("start waiting");
                     synchronized (this){
-                        wait();
+                        this.wait();
                     }
                     System.out.println("finsih waiting");
                 } catch (InterruptedException e) {
@@ -150,11 +169,14 @@ public class RandomClassifier extends Classifier {
                     }
                 });
             }
+
         }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                System.out.println("setvalue");
                 ((AppUI)applicationTemplate.getUIComponent()).getRunButton().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).setRunStarted(false);
             }
         });
     }
