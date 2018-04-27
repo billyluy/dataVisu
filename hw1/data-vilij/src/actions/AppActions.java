@@ -1,5 +1,6 @@
 package actions;
 
+import components.AlgorithmRunDialog;
 import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;
 import javafx.application.Platform;
@@ -31,6 +32,7 @@ public final class AppActions implements ActionComponent {
 
     /** The application to which this class of actions belongs. */
     private ApplicationTemplate applicationTemplate;
+    private boolean hasInitialized = false;
 
     /** Path to the data file currently active. */
     Path dataFilePath;
@@ -46,6 +48,7 @@ public final class AppActions implements ActionComponent {
         PropertyManager manager = applicationTemplate.manager;
         ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
         applicationTemplate.getUIComponent().clear();
+        ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         ((AppUI)applicationTemplate.getUIComponent()).setIsLoad(false);
         ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
         ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().clear();
@@ -65,6 +68,8 @@ public final class AppActions implements ActionComponent {
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithmListPaneH().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getEditToggle().setText(manager.getPropertyValue(DONE.name()));
+        ((AppUI)applicationTemplate.getUIComponent()).setRunStarted(false);
+        ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
         dataFilePath = null;
 
     }
@@ -120,6 +125,9 @@ public final class AppActions implements ActionComponent {
             ((AppUI)applicationTemplate.getUIComponent()).setIsLoad(true);
             ((AppUI)applicationTemplate.getUIComponent()).getEditToggle().setVisible(false);
             ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(true);
+            ((AppUI)applicationTemplate.getUIComponent()).setRunStarted(false);
+            ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
+            ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         } catch (NullPointerException e){
             (applicationTemplate.getDialog(Dialog.DialogType.ERROR)).show(manager.getPropertyValue(SPECIFIED_FILE.name()), manager.getPropertyValue(RESOURCE_SUBDIR_NOT_FOUND.name()));
         }
@@ -129,7 +137,21 @@ public final class AppActions implements ActionComponent {
     @Override
     public void handleExitRequest() {
         // TODO for homework 1
-        Platform.exit();
+        if(dataFilePath == null && !((AppUI)applicationTemplate.getUIComponent()).getIsAlgorithmRun()){
+            try {
+                promptToSave();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else if(((AppUI)applicationTemplate.getUIComponent()).getIsAlgorithmRun()){
+            try {
+                promptExit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Platform.exit();
+        }
     }
 
     @Override
@@ -166,6 +188,27 @@ public final class AppActions implements ActionComponent {
      *
      * @return <code>false</code> if the user presses the <i>cancel</i>, and <code>true</code> otherwise.
      */
+
+    private void promptExit() throws IOException {
+        // TODO for homework 1
+        // TODO remove the placeholder line below after you have implemented this method
+        AlgorithmRunDialog algorithmRunDialog= AlgorithmRunDialog.getDialog();
+        if(hasInitialized == false){
+            algorithmRunDialog.init(((AppUI)applicationTemplate.getUIComponent()).getPrimaryWindow());
+            hasInitialized = true;
+        }
+        algorithmRunDialog.show("Exit while run", "There is an algorihtim currently runnin");
+        if (algorithmRunDialog.getSelectedOption()== null) {
+            return;
+        }
+        if (algorithmRunDialog.getSelectedOption().equals(AlgorithmRunDialog.Option.TERM)) {
+            Platform.exit();
+        }
+        if (algorithmRunDialog.getSelectedOption().equals(AlgorithmRunDialog.Option.RETURN)) {
+            return;
+        }
+    }
+
     private boolean promptToSave() throws IOException {
         // TODO for homework 1
         // TODO remove the placeholder line below after you have implemented this method
@@ -173,7 +216,11 @@ public final class AppActions implements ActionComponent {
         TSDProcessor processor = new TSDProcessor();
         String text = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
         applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION).show(manager.getPropertyValue(SAVE_UNSAVED_WORK_TITLE.name()), manager.getPropertyValue(SAVE_UNSAVED_WORK.name()));
-        if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.YES)){
+        ConfirmationDialog confirmationDialog = ConfirmationDialog.getDialog();
+        if((confirmationDialog.getSelectedOption() == null)){
+            return false;
+        }
+        if(confirmationDialog.getSelectedOption().equals(Option.YES)){
             try {
                 processor.processString(text);
                 if (dataFilePath == null) {
@@ -206,6 +253,7 @@ public final class AppActions implements ActionComponent {
             }
         }
         if(((ConfirmationDialog)applicationTemplate.getDialog(Dialog.DialogType.CONFIRMATION)).getSelectedOption().equals(Option.NO)){
+            Platform.exit();
             return true;
         }else{
             return false;

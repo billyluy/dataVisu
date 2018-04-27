@@ -70,6 +70,15 @@ public class RandomClassifier extends Classifier {
         /*
         Most code should be done here
          */
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getLoadButton().setDisable(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getNewButton().setDisable(true);
+            }
+        });
         for (int i = 1; i <= maxIterations && tocontinue(); i++) {
             int xCoefficient =  new Long(-1 * Math.round((2 * RAND.nextDouble() - 1) * 10)).intValue();
             int yCoefficient = 10;
@@ -100,11 +109,11 @@ public class RandomClassifier extends Classifier {
             // everything below is just for internal viewing of how the output is changing
             // in the final project, such changes will be dynamically visible in the UI
             if (i % updateInterval == 0) {
-                System.out.printf("Iteration number %d: ", i); //
+//                System.out.printf("Iteration number %d: ", i);
                 flush();
             }
             if (i > maxIterations * .6 && RAND.nextDouble() < 0.05) {
-                System.out.printf("Iteration number %d: ", i);
+//                System.out.printf("Iteration number %d: ", i);
                 flush();
                 break;
             }
@@ -115,9 +124,16 @@ public class RandomClassifier extends Classifier {
             int constant = RAND.nextInt(11);
             y1 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMinX())) / yCoefficient;
             y2 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMaxX())) / yCoefficient;
+            output = Arrays.asList(xCoefficient, yCoefficient, constant);
             count++;
             System.out.println(count);
             if (count % updateInterval == 0) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(true);
+                    }
+                });
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -127,7 +143,6 @@ public class RandomClassifier extends Classifier {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        System.out.println("moded"+count);
                         ((AppData) applicationTemplate.getDataComponent()).addTwoPointLine(y1, y2);
                     }
                 });
@@ -135,15 +150,14 @@ public class RandomClassifier extends Classifier {
                     break;
                 }
                 try {
-                    System.out.println("sleep");
+                    Thread.sleep(2000);
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("disable run but");
                             ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setDisable(true);
+                            ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                         }
                     });
-                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -154,11 +168,9 @@ public class RandomClassifier extends Classifier {
                     }
                 });
                 try {
-                    System.out.println("start waiting");
                     synchronized (this){
                         this.wait();
                     }
-                    System.out.println("finsih waiting");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -169,14 +181,26 @@ public class RandomClassifier extends Classifier {
                     }
                 });
             }
-
+            if (count % updateInterval == 0) {
+//                System.out.printf("Iteration number %d: ", i);
+                flush();
+            }
+            if (count > maxIterations * .6 && RAND.nextDouble() < 0.05) {
+//                System.out.printf("Iteration number %d: ", i);
+                flush();
+                break;
+            }
         }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                System.out.println("setvalue");
                 ((AppUI)applicationTemplate.getUIComponent()).getRunButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).setRunStarted(false);
+                ((AppUI)applicationTemplate.getUIComponent()).setIsAlgorithmRun(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getLoadButton().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("Algorithm is done");
             }
         });
     }

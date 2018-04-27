@@ -149,7 +149,6 @@ public class AppData implements DataComponent {
                     maxX = ((Point2D)processor.getDataPoints().values().toArray()[i]).getX();
                 }
             }
-            ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
         }
     }
 

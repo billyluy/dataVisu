@@ -64,11 +64,7 @@ public final class AppUI extends UITemplate {
     private ToggleButton                 tb1;
     private ToggleButton                 tb2;
     private RadioButton                  rb1;
-//    private RadioButton                  rb2;
-//    private RadioButton                  rb3;
     private Button                       cb1;
-//    private Button                       cb2;
-//    private Button                       cb3;
     private Button                       runButton;
     private ToggleButton                   algorType;
     private configurationClassificationWindow[] classificationList;
@@ -78,9 +74,11 @@ public final class AppUI extends UITemplate {
     private ToggleGroup                  algorList;
     private RandomClassifier             randomClassifier;
     private DataSet                      dataSet;
-    private Boolean                      isLoad;
+    private Text                         algorCount;
     private Thread                       thread2;
     private Boolean                      runStarted;
+    private Boolean                      isAlgorithmRun;
+    private Boolean                      isLoad;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -144,6 +142,7 @@ public final class AppUI extends UITemplate {
     private void layout() {
         // TODO for homework 1
         runStarted = false;
+        isAlgorithmRun = false;
         dataSet = new DataSet();
         classificationList = new configurationClassificationWindow[3];
         isClassificationConfigedList = new boolean[3];
@@ -164,7 +163,7 @@ public final class AppUI extends UITemplate {
         title.setFont(new Font(20));
 
         inputDataText = new Text();
-
+        algorCount = new Text();
         textArea = new TextArea();
         textArea2 = new TextArea();
         displayButton = new Button();
@@ -190,13 +189,7 @@ public final class AppUI extends UITemplate {
 
         rb1 = new RadioButton();
         rb1.setToggleGroup(algorList);
-/*
-        rb2 = new RadioButton("B");
-        rb2.setToggleGroup(algorList);
 
-        rb3 = new RadioButton("C");
-        rb3.setToggleGroup(algorList);
-*/
         Image settingImage = new Image(manager.getPropertyValue(SETTING_PATH.name()),20,20,true,false);
         Image runImage = new Image(manager.getPropertyValue(RUN_PATH.name()),20,20,true,false);
 
@@ -208,22 +201,12 @@ public final class AppUI extends UITemplate {
         cb1 = new Button();
         cb1.setGraphic(new ImageView(settingImage));
 
-//        cb2 = new Button();
-//        cb2.setGraphic(new ImageView(settingImage));
-//
-//        cb3 = new Button();
-//        cb3.setGraphic(new ImageView(settingImage));
-
         algorithmListPaneV1 = new VBox();
         algorithmListPaneV1.getChildren().add(rb1);
-//        algorithmListPaneV1.getChildren().add(rb2);
-//        algorithmListPaneV1.getChildren().add(rb3);
         algorithmListPaneV1.setSpacing(15);
 
         algorithmListPaneV2 = new VBox();
         algorithmListPaneV2.getChildren().add(cb1);
-//        algorithmListPaneV2.getChildren().add(cb2);
-//        algorithmListPaneV2.getChildren().add(cb3);
 
         algorithmListPaneH = new HBox();
         algorithmListPaneH.getChildren().add(algorithmListPaneV1);
@@ -237,6 +220,7 @@ public final class AppUI extends UITemplate {
         vPane.getChildren().add(editToggle);
         vPane.getChildren().add(inputDataText);
         vPane.getChildren().add(algorithmTitle);
+        vPane.getChildren().add(algorCount);
         vPane.getChildren().add(tb1);
         vPane.getChildren().add(tb2);
         vPane.getChildren().add(algorithmListPaneH);
@@ -256,6 +240,7 @@ public final class AppUI extends UITemplate {
         TSDProcessor processor = ((AppData)applicationTemplate.getDataComponent()).getProcessor();
         PropertyManager manager = applicationTemplate.manager;
         editToggle.setOnAction(e -> {
+            ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
             if(editToggle.getText().equals(manager.getPropertyValue(DONE.name()))){
                 try{
                     inputDataText.setText("");
@@ -295,15 +280,12 @@ public final class AppUI extends UITemplate {
                 inputDataText.setText("");
                 editToggle.setText(manager.getPropertyValue(DONE.name()));
                 rb1.setVisible(true);
-//                rb2.setVisible(true);
                 tb1.setVisible(false);
                 tb2.setVisible(false);
                 algorithmTitle.setVisible(false);
                 algorithmListPaneH.setVisible(false);
                 runButton.setVisible(false);
                 rb1.setSelected(false);
-//                rb2.setSelected(false);
-//                rb3.setSelected(false);
                 textArea.setDisable(false);
             }
         });
@@ -336,22 +318,20 @@ public final class AppUI extends UITemplate {
             textArea.setDisable(hasNewText);
         });
         tb1.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//            tb1.setVisible(false);
-//            tb2.setVisible(false);
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
             algorType = tb1;
             rb1.setText("Random"+algorType.getText());
             rb1.setSelected(false);
+            ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         });
         tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//            tb1.setVisible(false);
-//            tb2.setVisible(false);
             runButton.setVisible(true);
             algorithmListPaneH.setVisible(true);
             algorType = tb2;
             rb1.setText("Random"+algorType.getText());
             rb1.setSelected(false);
+            ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         });
         cb1.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if(algorType.equals(tb1)){
@@ -444,12 +424,6 @@ public final class AppUI extends UITemplate {
                     if(new_toggle.equals(rb1)&&classificationList[0]!=null){
                         runButton.setDisable(false);
                     }
-//                        else if(new_toggle.equals(rb2)&&classificationList[1]!=null){
-//                            runButton.setDisable(false);
-//                        }
-//                        else if(new_toggle.equals(rb3)&&classificationList[2]!=null){
-//                            runButton.setDisable(false);
-//                        }
                     else{
                         runButton.setDisable(true);
                     }
@@ -458,12 +432,6 @@ public final class AppUI extends UITemplate {
                     if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
                         runButton.setDisable(false);
                     }
-//                        else if(new_toggle.equals(rb2)&&clusteringList[1]!=null){
-//                            runButton.setDisable(false);
-//                        }
-//                        else if(new_toggle.equals(rb3)&&clusteringList[2]!=null){
-//                            runButton.setDisable(false);
-//                        }
                     else{
                         runButton.setDisable(true);
                     }
@@ -476,6 +444,7 @@ public final class AppUI extends UITemplate {
         runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if(!runStarted){
                 runStarted = true;
+                isAlgorithmRun = true;
                 runButton.setDisable(true);
                 randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
                 thread2 = new Thread(randomClassifier);
@@ -498,12 +467,28 @@ public final class AppUI extends UITemplate {
         return textArea;
     }
 
+    public Button getNewButton(){
+        return newButton;
+    }
+
     public Boolean getRunStarted(){
         return runStarted;
     }
 
     public void setRunStarted(Boolean bol){
         runStarted = bol;
+    }
+
+    public void setIsAlgorithmRun(Boolean bol){
+        isAlgorithmRun = bol;
+    }
+
+    public Boolean getIsAlgorithmRun(){
+        return isAlgorithmRun;
+    }
+
+    public RandomClassifier getRandomClassifier(){
+        return randomClassifier;
     }
 
     public Thread getThread2(){
@@ -522,6 +507,10 @@ public final class AppUI extends UITemplate {
 
     public Button getScrnshotButton(){
         return scrnshotButton;
+    }
+
+    public Button getLoadButton(){
+        return loadButton;
     }
 
     public Button getEditToggle(){
@@ -560,7 +549,11 @@ public final class AppUI extends UITemplate {
         return algorithmListPaneH;
     }
 
-    public void setIsLoad(Boolean b){
-        isLoad = b;
+    public Text getAlgorCount(){
+        return algorCount;
+    }
+
+    public void setIsLoad(Boolean bol){
+        isLoad = bol;
     }
 }

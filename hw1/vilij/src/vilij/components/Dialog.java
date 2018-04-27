@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 public interface Dialog {
 
     enum DialogType {
-        ERROR, CONFIRMATION
+        ERROR, CONFIRMATION, EXIT
     }
 
     void show(String title, String message);
