@@ -3,6 +3,7 @@ package classification;
 import algorithms.Classifier;
 import data.DataSet;
 import dataprocessors.AppData;
+import javafx.application.Platform;
 import ui.AppUI;
 import vilij.templates.ApplicationTemplate;
 
@@ -28,6 +29,7 @@ public class RandomClassifier extends Classifier {
     private ApplicationTemplate applicationTemplate;
     private Double y1;
     private Double y2;
+    private int count;
 
     // currently, this value does not change after instantiation
     private final AtomicBoolean tocontinue;
@@ -55,6 +57,7 @@ public class RandomClassifier extends Classifier {
         this.maxIterations = maxIterations;
         this.updateInterval = updateInterval;
         this.tocontinue = new AtomicBoolean(tocontinue);
+        count = 1;
     }
 
     public void setApplicationTemplate(ApplicationTemplate applicationTemplate){
@@ -62,8 +65,7 @@ public class RandomClassifier extends Classifier {
     }
 
     @Override
-    public void run() {
-        System.out.println("running");
+    public synchronized void run() {
         /*
         Most code should be done here
          */
@@ -73,22 +75,27 @@ public class RandomClassifier extends Classifier {
             int constant     = RAND.nextInt(11);
             // this is the real output of the classifier
             output = Arrays.asList(xCoefficient, yCoefficient, constant);
-            System.out.println(((AppData)applicationTemplate.getDataComponent()).getMinX());
             y1 = (constant-(xCoefficient*((AppData)applicationTemplate.getDataComponent()).getMinX()))/yCoefficient;
             y2 = (constant-(xCoefficient*((AppData)applicationTemplate.getDataComponent()).getMaxX()))/yCoefficient;
-            System.out.println("min: "+((AppData)applicationTemplate.getDataComponent()).getMinX() + "," + y1);
-            System.out.println("max: "+((AppData)applicationTemplate.getDataComponent()).getMaxX() + "," + y2);
-            ((AppData)applicationTemplate.getDataComponent()).addTwoPointLine(y1,y2);
-            try {
-                Thread.sleep(1000);
-                System.out.println("thread sleep");
-                /*
-                    need wait and run?
-                 */
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(i % updateInterval == 0) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().remove(((AppData) applicationTemplate.getDataComponent()).getseries2());
+                    }
+                });
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((AppData)applicationTemplate.getDataComponent()).addTwoPointLine(y1,y2);
+                    }
+                });
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
             // everything below is just for internal viewing of how the output is changing
             // in the final project, such changes will be dynamically visible in the UI
             if (i % updateInterval == 0) {
@@ -101,6 +108,55 @@ public class RandomClassifier extends Classifier {
                 break;
             }
         }
+        while(count< maxIterations && !tocontinue()) {
+            int xCoefficient = new Long(-1 * Math.round((2 * RAND.nextDouble() - 1) * 10)).intValue();
+            int yCoefficient = 10;
+            int constant = RAND.nextInt(11);
+            y1 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMinX())) / yCoefficient;
+            y2 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMaxX())) / yCoefficient;
+            count++;
+            if (count % updateInterval == 0) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println(count);
+                        ((AppData) applicationTemplate.getDataComponent()).addTwoPointLine(y1, y2);
+                    }
+                });
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setDisable(false);
+                    }
+                });
+                try {
+                    System.out.println("start waiting");
+                    synchronized (this){
+                        wait();
+                    }
+                    System.out.println("finsih waiting");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((AppUI)applicationTemplate.getUIComponent()).getRunButton().setDisable(false);
+                    }
+                });
+            }
+        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ((AppUI)applicationTemplate.getUIComponent()).getRunButton().setDisable(false);
+            }
+        });
     }
 
     // for internal viewing only
@@ -110,7 +166,6 @@ public class RandomClassifier extends Classifier {
 
     /** A placeholder main method to just make sure this code runs smoothly */
     public static void main(String... args) throws IOException {
-
         DataSet          dataset    = DataSet.fromTSDFile(Paths.get("/path/to/some-data.tsd"));
         RandomClassifier classifier = new RandomClassifier(dataset, 100, 5, true);
         classifier.run(); // no multithreading yet

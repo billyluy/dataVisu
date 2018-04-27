@@ -7,6 +7,7 @@ import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;
 import dataprocessors.configurationClassificationWindow;
 import dataprocessors.configurationClusteringWindow;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -79,6 +80,7 @@ public final class AppUI extends UITemplate {
     private DataSet                      dataSet;
     private Boolean                      isLoad;
     private Thread                       thread2;
+    private Boolean                      runStarted;
 
     public LineChart<Number, Number> getChart() { return chart; }
 
@@ -141,6 +143,7 @@ public final class AppUI extends UITemplate {
 
     private void layout() {
         // TODO for homework 1
+        runStarted = false;
         dataSet = new DataSet();
         classificationList = new configurationClassificationWindow[3];
         isClassificationConfigedList = new boolean[3];
@@ -471,16 +474,20 @@ public final class AppUI extends UITemplate {
 
         });
         runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
-            thread2 = new Thread(randomClassifier);
-            randomClassifier.setApplicationTemplate(applicationTemplate);
-            thread2.start();
-            while(thread2.isAlive()){
+            if(!runStarted){
+                runStarted = true;
+                runButton.setDisable(true);
+                randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
+                thread2 = new Thread(randomClassifier);
+                randomClassifier.setApplicationTemplate(applicationTemplate);
                 ((AppData)applicationTemplate.getDataComponent()).clear();
-                System.out.println("thread is alive");
                 String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
                 ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-                thread2.run();
+//            runButton.setDisable(true);
+                synchronized (this){
+                    thread2.start();
+                    notifyAll();
+                }
             }
         });
     }

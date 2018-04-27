@@ -175,4 +175,8 @@ public class AppData implements DataComponent {
     public Double getMinX(){
         return minX;
     }
+
+    public XYChart.Series<Number, Number> getseries2(){
+        return series2;
+    }
 }
