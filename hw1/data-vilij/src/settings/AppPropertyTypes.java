@@ -48,6 +48,7 @@ public enum AppPropertyTypes {
     DUPE_LINE,
     LENGTH1,
     LENGTH2,
+    EXIT_WHILE_RUNNING_WARNING,
 
     /* application-specific message titles */
     SAVE_UNSAVED_WORK_TITLE,

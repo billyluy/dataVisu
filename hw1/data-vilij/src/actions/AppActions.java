@@ -86,8 +86,8 @@ public final class AppActions implements ActionComponent {
                 FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()), manager.getPropertyValue(DATA_FILE_EXT.name()));
                 FileChooser fc = new FileChooser();
                 fc.getExtensionFilters().add(extFilter);
-                fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
-                fc.getInitialDirectory();
+//                fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
+//                fc.getInitialDirectory();
                 fc.setTitle(manager.getPropertyValue(SAVE_TITLE.name()));
 
                 File file = fc.showSaveDialog((applicationTemplate).getUIComponent().getPrimaryWindow());
@@ -192,12 +192,13 @@ public final class AppActions implements ActionComponent {
     private void promptExit() throws IOException {
         // TODO for homework 1
         // TODO remove the placeholder line below after you have implemented this method
+        PropertyManager manager = applicationTemplate.manager;
         AlgorithmRunDialog algorithmRunDialog= AlgorithmRunDialog.getDialog();
         if(hasInitialized == false){
             algorithmRunDialog.init(((AppUI)applicationTemplate.getUIComponent()).getPrimaryWindow());
             hasInitialized = true;
         }
-        algorithmRunDialog.show("Exit while run", "There is an algorihtim currently runnin");
+        algorithmRunDialog.show("Exit", manager.getPropertyValue(EXIT_WHILE_RUNNING_WARNING.name()));
         if (algorithmRunDialog.getSelectedOption()== null) {
             return;
         }
@@ -227,8 +228,8 @@ public final class AppActions implements ActionComponent {
                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(manager.getPropertyValue(DATA_FILE_EXT_DESC.name()), manager.getPropertyValue(DATA_FILE_EXT.name()));
                     FileChooser fc = new FileChooser();
                     fc.getExtensionFilters().add(extFilter);
-                    fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
-                    fc.getInitialDirectory();
+//                    fc.setInitialDirectory(new File(manager.getPropertyValue(DATA_RESOURCE_PATH.name())));
+//                    fc.getInitialDirectory();
                     fc.setTitle(manager.getPropertyValue(SAVE_TITLE.name()));
 
                     File file = fc.showSaveDialog((applicationTemplate).getUIComponent().getPrimaryWindow());
