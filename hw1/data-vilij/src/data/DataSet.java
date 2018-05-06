@@ -62,7 +62,7 @@ public class DataSet {
         labels.put(instanceName, newlabel);
     }
 
-    public void addInstance(String tsdLine) throws InvalidDataNameException {
+    private void addInstance(String tsdLine) throws InvalidDataNameException {
         String[] arr = tsdLine.split("\t");
         labels.put(nameFormatCheck(arr[0]), arr[1]);
         locations.put(arr[0], locationOf(arr[2]));
@@ -78,5 +78,18 @@ public class DataSet {
             }
         });
         return dataset;
+    }
+
+    public DataSet fromString(String s){
+        DataSet dataSet = new DataSet();
+        String[] lines = s.split("\n");
+        for(int i =0; i< lines.length; i++){
+            try {
+                dataSet.addInstance(lines[i]);
+            } catch (InvalidDataNameException e) {
+                e.printStackTrace();
+            }
+        }
+        return dataSet;
     }
 }

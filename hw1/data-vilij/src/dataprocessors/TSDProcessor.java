@@ -178,4 +178,8 @@ public final class TSDProcessor {
     public HashSet getUniqueLabels() { return uniqueLabels; }
 
     public int getInstanceSize() { return dataPoints.size(); }
+
+    public void setLabels(Map<String, String> labels){
+        this.dataLabels = labels;
+    }
 }

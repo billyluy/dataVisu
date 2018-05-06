@@ -2,6 +2,8 @@ package ui;
 
 import actions.AppActions;
 import classification.RandomClassifier;
+import clustering.KMeansClusterer;
+import clustering.RandomClusterer;
 import data.DataSet;
 import dataprocessors.AppData;
 import dataprocessors.TSDProcessor;
@@ -64,7 +66,9 @@ public final class AppUI extends UITemplate {
     private ToggleButton                 tb1;
     private ToggleButton                 tb2;
     private RadioButton                  rb1;
+    private RadioButton                  rb2;
     private Button                       cb1;
+    private Button                       cb2;
     private Button                       runButton;
     private ToggleButton                   algorType;
     private configurationClassificationWindow[] classificationList;
@@ -73,6 +77,8 @@ public final class AppUI extends UITemplate {
     private boolean[]                      isClusteringConfigedList;
     private ToggleGroup                  algorList;
     private RandomClassifier             randomClassifier;
+    private RandomClusterer              randomClusterer;
+    private KMeansClusterer              kMeansClusterer;
     private DataSet                      dataSet;
     private Text                         algorCount;
     private Thread                       thread2;
@@ -189,6 +195,8 @@ public final class AppUI extends UITemplate {
 
         rb1 = new RadioButton();
         rb1.setToggleGroup(algorList);
+        rb2 = new RadioButton();
+        rb2.setToggleGroup(algorList);
 
         Image settingImage = new Image(manager.getPropertyValue(SETTING_PATH.name()),20,20,true,false);
         Image runImage = new Image(manager.getPropertyValue(RUN_PATH.name()),20,20,true,false);
@@ -200,13 +208,17 @@ public final class AppUI extends UITemplate {
 
         cb1 = new Button();
         cb1.setGraphic(new ImageView(settingImage));
+        cb2 = new Button();
+        cb2.setGraphic(new ImageView(settingImage));
 
         algorithmListPaneV1 = new VBox();
         algorithmListPaneV1.getChildren().add(rb1);
+        algorithmListPaneV1.getChildren().add(rb2);
         algorithmListPaneV1.setSpacing(15);
 
         algorithmListPaneV2 = new VBox();
         algorithmListPaneV2.getChildren().add(cb1);
+        algorithmListPaneV2.getChildren().add(cb2);
 
         algorithmListPaneH = new HBox();
         algorithmListPaneH.getChildren().add(algorithmListPaneV1);
@@ -232,7 +244,6 @@ public final class AppUI extends UITemplate {
         hPane.getChildren().add(chart);
 
         appPane.getChildren().add(hPane);
-
     }
 
     private void setWorkspaceActions() {
@@ -323,6 +334,10 @@ public final class AppUI extends UITemplate {
             algorType = tb1;
             rb1.setText("Random"+algorType.getText());
             rb1.setSelected(false);
+            rb2.setText("rb2");
+            rb2.setSelected(false);
+            rb2.setVisible(false);
+            cb2.setVisible(false);
             ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         });
         tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -331,6 +346,10 @@ public final class AppUI extends UITemplate {
             algorType = tb2;
             rb1.setText("Random"+algorType.getText());
             rb1.setSelected(false);
+            rb2.setText("rb2");
+            rb2.setSelected(false);
+            rb2.setVisible(true);
+            cb2.setVisible(true);
             ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         });
         cb1.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -364,60 +383,39 @@ public final class AppUI extends UITemplate {
                 }
             }
         });
-//        cb2.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-//            @Override public void handle(MouseEvent e) {
-//                if(algorType.equals(tb1)){
-//                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
-//                    if(!isClassificationConfigedList[1]){
-//                        configWindow.showConfig(cb1,1,1,false);
-//                        isClassificationConfigedList[1] = true;
-//                    }else{
-//                        configWindow.showConfig(cb1, classificationList[1].getMaxIterations(),  classificationList[1].getUpdateInterval(),  classificationList[1].getContinuous());
-//                    }
-//                    if(configWindow != (null)){
-//                        classificationList[1] = configWindow;
-//                    }
-//                }else if(algorType.equals(tb2)){
-//                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
-//                    if(!isClusteringConfigedList[1]){
-//                        configWindow.showConfig(cb1,1,1,1,false);
-//                        isClusteringConfigedList[1] = true;
-//                    }else{
-//                        configWindow.showConfig(cb1, clusteringList[1].getMaxIterations(),  clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(),  clusteringList[1].getContinuous());
-//                    }
-//                    if(configWindow != (null)){
-//                        clusteringList[1] = configWindow;
-//                    }
-//                }
-//            }
-//        });
-//        cb3.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-//            @Override public void handle(MouseEvent e) {
-//                if(algorType.equals(tb1)){
-//                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
-//                    if(!isClassificationConfigedList[2]){
-//                        configWindow.showConfig(cb1,1,1,false);
-//                        isClassificationConfigedList[2] = true;
-//                    }else{
-//                        configWindow.showConfig(cb1, classificationList[2].getMaxIterations(),  classificationList[2].getUpdateInterval(),  classificationList[2].getContinuous());
-//                    }
-//                    if(configWindow != (null)){
-//                        classificationList[2] = configWindow;
-//                    }
-//                }else if(algorType.equals(tb2)){
-//                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
-//                    if(!isClusteringConfigedList[2]){
-//                        configWindow.showConfig(cb1,1,1,1,false);
-//                        isClusteringConfigedList[2] = true;
-//                    }else{
-//                        configWindow.showConfig(cb1, clusteringList[2].getMaxIterations(),  clusteringList[2].getUpdateInterval(), clusteringList[2].getNumLabel(),  clusteringList[2].getContinuous());
-//                    }
-//                    if(configWindow != (null)){
-//                        clusteringList[2] = configWindow;
-//                    }
-//                }
-//            }
-//        });
+        cb2.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override public void handle(MouseEvent e) {
+                if(algorType.equals(tb1)){
+                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                    if(!isClassificationConfigedList[1]){
+                        configWindow.showConfig(cb1,1,1,false);
+                        isClassificationConfigedList[1] = true;
+                    }else{
+                        configWindow.showConfig(cb1, classificationList[1].getMaxIterations(),  classificationList[1].getUpdateInterval(),  classificationList[1].getContinuous());
+                    }
+                    if(configWindow != (null)){
+                        classificationList[1] = configWindow;
+                    }
+                    if(rb2.isSelected()){
+                        runButton.setDisable(false);
+                    }
+                }else if(algorType.equals(tb2)){
+                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
+                    if(!isClusteringConfigedList[1]){
+                        configWindow.showConfig(cb1,1,1,1,false);
+                        isClusteringConfigedList[1] = true;
+                    }else{
+                        configWindow.showConfig(cb1, clusteringList[1].getMaxIterations(),  clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(),  clusteringList[1].getContinuous());
+                    }
+                    if(configWindow != (null)){
+                        clusteringList[1] = configWindow;
+                    }
+                    if(rb2.isSelected()){
+                        runButton.setDisable(false);
+                    }
+                }
+            }
+        });
         algorList.selectedToggleProperty().addListener((ov, toggle, new_toggle) -> {
             try{
                 if(algorType.equals(tb1)){
@@ -442,20 +440,63 @@ public final class AppUI extends UITemplate {
 
         });
         runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if(!runStarted){
-                runStarted = true;
-                isAlgorithmRun = true;
-                runButton.setDisable(true);
-                randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
-                thread2 = new Thread(randomClassifier);
-                randomClassifier.setApplicationTemplate(applicationTemplate);
-                ((AppData)applicationTemplate.getDataComponent()).clear();
-                String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
-                ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-                thread2.start();
-            }else{
-                synchronized (randomClassifier){
-                    randomClassifier.notify();
+            DataSet dataSet = new DataSet();
+            if(algorType.equals(tb1)){
+                if(!runStarted){
+                    runStarted = true;
+                    isAlgorithmRun = true;
+                    runButton.setDisable(true);
+                    randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
+                    thread2 = new Thread(randomClassifier);
+                    randomClassifier.setApplicationTemplate(applicationTemplate);
+                    ((AppData)applicationTemplate.getDataComponent()).clear();
+                    String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
+                    ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+                    thread2.start();
+                }else{
+                    synchronized (randomClassifier){
+                        randomClassifier.notify();
+                    }
+                }
+            }else if(algorType.equals(tb2)){
+                if(rb1.isSelected()) {
+                    dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
+                    if (!runStarted) {
+                        System.out.println(runStarted);
+                        runStarted = true;
+                        isAlgorithmRun = true;
+                        runButton.setDisable(true);
+                        randomClusterer = new RandomClusterer(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous());
+                        thread2 = new Thread(randomClusterer);
+                        randomClusterer.setApplicationTemplate(applicationTemplate);
+                        ((AppData) applicationTemplate.getDataComponent()).clear();
+                        String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
+                        ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+                        thread2.start();
+                    }else{
+                        synchronized (randomClusterer){
+                            randomClusterer.notify();
+                        }
+                    }
+                }else{
+                    dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
+                    if (!runStarted) {
+                        System.out.println("second one");
+                        runStarted = true;
+                        isAlgorithmRun = true;
+                        runButton.setDisable(true);
+                        kMeansClusterer = new KMeansClusterer(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous());
+                        thread2 = new Thread(kMeansClusterer);
+                        kMeansClusterer.setApplicationTemplate(applicationTemplate);
+                        ((AppData) applicationTemplate.getDataComponent()).clear();
+                        String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
+                        ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+                        thread2.start();
+                    }else{
+                        synchronized (kMeansClusterer){
+                            kMeansClusterer.notify();
+                        }
+                    }
                 }
             }
         });

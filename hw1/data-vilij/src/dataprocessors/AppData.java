@@ -12,6 +12,7 @@ import javafx.geometry.Point2D;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static settings.AppPropertyTypes.*;
 
@@ -161,6 +162,12 @@ public class AppData implements DataComponent {
             ((XYChart.Data)data).getNode().setVisible(false);
             series2.getNode().setId("AverageId");
         }
+    }
+
+    public void updateLabels(Map<String, String> labels){
+        ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().clear();
+        processor.setLabels(labels);
+        processor.toChartData(((AppUI)applicationTemplate.getUIComponent()).getChart());
     }
 
     public TSDProcessor getProcessor() {

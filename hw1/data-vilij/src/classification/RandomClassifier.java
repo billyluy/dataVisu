@@ -126,7 +126,6 @@ public class RandomClassifier extends Classifier {
             y2 = (constant - (xCoefficient * ((AppData) applicationTemplate.getDataComponent()).getMaxX())) / yCoefficient;
             output = Arrays.asList(xCoefficient, yCoefficient, constant);
             count++;
-            System.out.println(count);
             if (count % updateInterval == 0) {
                 Platform.runLater(new Runnable() {
                     @Override
