@@ -70,7 +70,7 @@ public class KMeansClusterer extends Clusterer {
                 ((AppUI)applicationTemplate.getUIComponent()).getNewButton().setDisable(true);
             }
         });
-        for (int i = 1; i <= maxIterations && continuousRun; i++) {
+        for (int i = 1; i <= maxIterations && tocontinue() && continuousRun; i++) {
             assignLabels();
             recomputeCentroids();
             if(i % updateInterval == 0) {
@@ -87,7 +87,7 @@ public class KMeansClusterer extends Clusterer {
                 }
             }
         }
-        while(count< maxIterations && !continuousRun) {
+        while(count< maxIterations && tocontinue() && !continuousRun) {
             count++;
             assignLabels();
             recomputeCentroids();
@@ -145,12 +145,6 @@ public class KMeansClusterer extends Clusterer {
                 ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getLoadButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("Algorithm is done");
-                ((AppUI)applicationTemplate.getUIComponent()).getCb1().setDisable(false);
-                ((AppUI)applicationTemplate.getUIComponent()).getCb2().setDisable(false);
-                ((AppUI)applicationTemplate.getUIComponent()).getTb1().setVisible(true);
-                ((AppUI)applicationTemplate.getUIComponent()).getTb2().setVisible(true);
-                ((AppUI)applicationTemplate.getUIComponent()).getRb1().setDisable(false);
-                ((AppUI)applicationTemplate.getUIComponent()).getRb2().setDisable(false);
             }
         });
     }
