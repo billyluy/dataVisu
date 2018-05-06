@@ -440,6 +440,7 @@ public final class AppUI extends UITemplate {
 
         });
         runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            algorCount.setText("algorithm is running");
             DataSet dataSet = new DataSet();
             if(algorType.equals(tb1)){
                 if(!runStarted){

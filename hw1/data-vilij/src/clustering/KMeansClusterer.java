@@ -70,7 +70,7 @@ public class KMeansClusterer extends Clusterer {
                 ((AppUI)applicationTemplate.getUIComponent()).getNewButton().setDisable(true);
             }
         });
-        for (int i = 1; i <= maxIterations && tocontinue() && continuousRun; i++) {
+        for (int i = 1; i <= maxIterations  && continuousRun; i++) {
             assignLabels();
             recomputeCentroids();
             if(i % updateInterval == 0) {
@@ -87,7 +87,7 @@ public class KMeansClusterer extends Clusterer {
                 }
             }
         }
-        while(count< maxIterations && tocontinue() && !continuousRun) {
+        while(count< maxIterations  && !continuousRun) {
             count++;
             assignLabels();
             recomputeCentroids();
