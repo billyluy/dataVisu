@@ -313,7 +313,6 @@ public final class AppUI extends UITemplate {
                 String p = "";
                 while(arrayList.size() > 0){
                     p += arrayList.remove(0)+"\n";
-                    System.out.println(p);
                 }
                 textArea2.setText(p);
             }
@@ -441,6 +440,14 @@ public final class AppUI extends UITemplate {
         });
         runButton.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             DataSet dataSet = new DataSet();
+            algorCount.setText("Algorithm Running");
+            cb1.setDisable(true);
+            cb2.setDisable(true);
+            tb1.setVisible(false);
+            tb2.setVisible(false);
+            rb1.setDisable(true);
+            rb2.setDisable(true);
+
             if(algorType.equals(tb1)){
                 if(!runStarted){
                     runStarted = true;
@@ -453,8 +460,8 @@ public final class AppUI extends UITemplate {
                     String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
                     ((AppData) applicationTemplate.getDataComponent()).loadData(s);
                     thread2.start();
-                }else{
-                    synchronized (randomClassifier){
+                }else {
+                    synchronized (randomClassifier) {
                         randomClassifier.notify();
                     }
                 }
@@ -462,7 +469,6 @@ public final class AppUI extends UITemplate {
                 if(rb1.isSelected()) {
                     dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
                     if (!runStarted) {
-                        System.out.println(runStarted);
                         runStarted = true;
                         isAlgorithmRun = true;
                         runButton.setDisable(true);
@@ -481,7 +487,6 @@ public final class AppUI extends UITemplate {
                 }else{
                     dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
                     if (!runStarted) {
-                        System.out.println("second one");
                         runStarted = true;
                         isAlgorithmRun = true;
                         runButton.setDisable(true);
@@ -574,9 +579,9 @@ public final class AppUI extends UITemplate {
         return rb1;
     }
 
-//    public RadioButton getRb2(){
-//        return rb2;
-//    }
+    public RadioButton getRb2(){
+        return rb2;
+    }
 //
 //    public RadioButton getRb3(){
 //        return rb3;
@@ -596,5 +601,13 @@ public final class AppUI extends UITemplate {
 
     public void setIsLoad(Boolean bol){
         isLoad = bol;
+    }
+
+    public Button getCb1(){
+        return cb1;
+    }
+
+    public Button getCb2(){
+        return cb2;
     }
 }

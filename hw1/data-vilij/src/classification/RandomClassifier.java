@@ -200,6 +200,12 @@ public class RandomClassifier extends Classifier {
                 ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getLoadButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("Algorithm is done");
+                ((AppUI)applicationTemplate.getUIComponent()).getCb1().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getCb2().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getTb1().setVisible(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getTb2().setVisible(true);
+                ((AppUI)applicationTemplate.getUIComponent()).getRb1().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getRb2().setDisable(false);
             }
         });
     }

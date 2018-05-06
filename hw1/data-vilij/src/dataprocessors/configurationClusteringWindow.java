@@ -46,7 +46,7 @@ public class configurationClusteringWindow {
 
         Text title = new Text("Algorithm Run Configuration");
         Text info = new Text();
-        info.setText("Max Iterations :" +"\n\n" + "Update Intervals :"+ "\n\n" + "Number Of Labels:" + "\n\n" + "Continuous Run? : "  + "\n\n");
+        info.setText("Max Iterations :" +"\n\n" + "Update Intervals :"+ "\n\n\n" + "Number Of Labels:" + "\n\n" + "Continuous Run? : "  + "\n\n");
         doneButton = new Button("Done");
         vBox1.getChildren().add(info);
         vBox1.getChildren().add(doneButton);
