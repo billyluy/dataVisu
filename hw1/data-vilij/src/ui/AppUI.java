@@ -76,9 +76,6 @@ public final class AppUI extends UITemplate {
     private configurationClusteringWindow[] clusteringList;
     private boolean[]                      isClusteringConfigedList;
     private ToggleGroup                  algorList;
-    private RandomClassifier             randomClassifier;
-    private RandomClusterer              randomClusterer;
-    private KMeansClusterer              kMeansClusterer;
     private DataSet                      dataSet;
     private Text                         algorCount;
     private Thread                       thread2;
@@ -382,39 +379,39 @@ public final class AppUI extends UITemplate {
                     runButton.setDisable(false);
                 }
             }
+//            instantButton();
         });
-        cb2.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent e) {
-                if(algorType.equals(tb1)){
-                    configurationClassificationWindow configWindow = new configurationClassificationWindow();
-                    if(!isClassificationConfigedList[1]){
-                        configWindow.showConfig(cb1,1,1,false);
-                        isClassificationConfigedList[1] = true;
-                    }else{
-                        configWindow.showConfig(cb1, classificationList[1].getMaxIterations(),  classificationList[1].getUpdateInterval(),  classificationList[1].getContinuous());
-                    }
-                    if(configWindow != (null)){
-                        classificationList[1] = configWindow;
-                    }
-                    if(rb2.isSelected()){
-                        runButton.setDisable(false);
-                    }
-                }else if(algorType.equals(tb2)){
-                    configurationClusteringWindow configWindow = new configurationClusteringWindow();
-                    if(!isClusteringConfigedList[1]){
-                        configWindow.showConfig(cb1,1,1,1,false);
-                        isClusteringConfigedList[1] = true;
-                    }else{
-                        configWindow.showConfig(cb1, clusteringList[1].getMaxIterations(),  clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(),  clusteringList[1].getContinuous());
-                    }
-                    if(configWindow != (null)){
-                        clusteringList[1] = configWindow;
-                    }
-                    if(rb2.isSelected()){
-                        runButton.setDisable(false);
-                    }
+        cb2.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if(algorType.equals(tb1)){
+                configurationClassificationWindow configWindow = new configurationClassificationWindow();
+                if(!isClassificationConfigedList[1]){
+                    configWindow.showConfig(cb1,1,1,false);
+                    isClassificationConfigedList[1] = true;
+                }else{
+                    configWindow.showConfig(cb1, classificationList[1].getMaxIterations(),  classificationList[1].getUpdateInterval(),  classificationList[1].getContinuous());
+                }
+                if(configWindow != (null)){
+                    classificationList[1] = configWindow;
+                }
+                if(rb2.isSelected()){
+                    runButton.setDisable(false);
+                }
+            }else if(algorType.equals(tb2)){
+                configurationClusteringWindow configWindow = new configurationClusteringWindow();
+                if(!isClusteringConfigedList[1]){
+                    configWindow.showConfig(cb1,1,1,1,false);
+                    isClusteringConfigedList[1] = true;
+                }else{
+                    configWindow.showConfig(cb1, clusteringList[1].getMaxIterations(),  clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(),  clusteringList[1].getContinuous());
+                }
+                if(configWindow != (null)){
+                    clusteringList[1] = configWindow;
+                }
+                if(rb2.isSelected()){
+                    runButton.setDisable(false);
                 }
             }
+//            instantButton();
         });
         algorList.selectedToggleProperty().addListener((ov, toggle, new_toggle) -> {
             try{
@@ -447,7 +444,7 @@ public final class AppUI extends UITemplate {
                     runStarted = true;
                     isAlgorithmRun = true;
                     runButton.setDisable(true);
-                    randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
+                    RandomClassifier randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
                     thread2 = new Thread(randomClassifier);
                     randomClassifier.setApplicationTemplate(applicationTemplate);
                     ((AppData)applicationTemplate.getDataComponent()).clear();
@@ -455,19 +452,18 @@ public final class AppUI extends UITemplate {
                     ((AppData) applicationTemplate.getDataComponent()).loadData(s);
                     thread2.start();
                 }else{
-                    synchronized (randomClassifier){
-                        randomClassifier.notify();
+                    synchronized (applicationTemplate.manager){
+                        applicationTemplate.manager.notify();
                     }
                 }
             }else if(algorType.equals(tb2)){
                 if(rb1.isSelected()) {
                     dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
                     if (!runStarted) {
-                        System.out.println(runStarted);
                         runStarted = true;
                         isAlgorithmRun = true;
                         runButton.setDisable(true);
-                        randomClusterer = new RandomClusterer(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous());
+                        RandomClusterer randomClusterer = new RandomClusterer(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous());
                         thread2 = new Thread(randomClusterer);
                         randomClusterer.setApplicationTemplate(applicationTemplate);
                         ((AppData) applicationTemplate.getDataComponent()).clear();
@@ -475,18 +471,17 @@ public final class AppUI extends UITemplate {
                         ((AppData) applicationTemplate.getDataComponent()).loadData(s);
                         thread2.start();
                     }else{
-                        synchronized (randomClusterer){
-                            randomClusterer.notify();
+                        synchronized (applicationTemplate.manager){
+                            applicationTemplate.manager.notify();
                         }
                     }
                 }else{
                     dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
                     if (!runStarted) {
-                        System.out.println("second one");
                         runStarted = true;
                         isAlgorithmRun = true;
                         runButton.setDisable(true);
-                        kMeansClusterer = new KMeansClusterer(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous());
+                        KMeansClusterer kMeansClusterer = new KMeansClusterer(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous());
                         thread2 = new Thread(kMeansClusterer);
                         kMeansClusterer.setApplicationTemplate(applicationTemplate);
                         ((AppData) applicationTemplate.getDataComponent()).clear();
@@ -494,14 +489,78 @@ public final class AppUI extends UITemplate {
                         ((AppData) applicationTemplate.getDataComponent()).loadData(s);
                         thread2.start();
                     }else{
-                        synchronized (kMeansClusterer){
-                            kMeansClusterer.notify();
+                        synchronized (applicationTemplate.manager){
+                            applicationTemplate.manager.notify();
                         }
                     }
                 }
             }
         });
     }
+
+//    public void instantButton(){
+//        if(algorType.equals(tb1)){
+//            RandomClassifier randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
+//            runButton.setOnAction(Event ->{
+//                if(!runStarted){
+//                    runStarted = true;
+//                    isAlgorithmRun = true;
+//                    runButton.setDisable(true);
+//                    thread2 = new Thread(randomClassifier);
+//                    randomClassifier.setApplicationTemplate(applicationTemplate);
+//                    ((AppData)applicationTemplate.getDataComponent()).clear();
+//                    String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
+//                    ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+//                    thread2.start();
+//                }else{
+//                    synchronized (randomClassifier){
+//                        randomClassifier.notify();
+//                    }
+//                }
+//            });
+//        }
+//        if(algorType.equals(tb2)){
+//            if(rb1.isSelected()) {
+//                RandomClusterer randomClusterer = new RandomClusterer(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous());
+//                runButton.setOnAction(Event ->{
+//                    if (!runStarted) {
+//                        runStarted = true;
+//                        isAlgorithmRun = true;
+//                        runButton.setDisable(true);
+//                        thread2 = new Thread(randomClusterer);
+//                        randomClusterer.setApplicationTemplate(applicationTemplate);
+//                        ((AppData) applicationTemplate.getDataComponent()).clear();
+//                        String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
+//                        ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+//                        thread2.start();
+//                    }else{
+//                        synchronized (randomClusterer){
+//                            randomClusterer.notify();
+//                        }
+//                    }
+//                });
+//            }else{
+//                KMeansClusterer kMeansClusterer = new KMeansClusterer(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous());
+//                runButton.setOnAction(Event -> {
+//                    if (!runStarted) {
+//                        runStarted = true;
+//                        isAlgorithmRun = true;
+//                        runButton.setDisable(true);
+//                        thread2 = new Thread(kMeansClusterer);
+//                        kMeansClusterer.setApplicationTemplate(applicationTemplate);
+//                        ((AppData) applicationTemplate.getDataComponent()).clear();
+//                        String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
+//                        ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+//                        thread2.start();
+//                    }else{
+//                        synchronized (kMeansClusterer){
+//                            kMeansClusterer.notify();
+//                        }
+//                    }
+//                });
+//            }
+//        }
+//    }
 
     public VBox getVPane() { return vPane;}
 
@@ -529,9 +588,9 @@ public final class AppUI extends UITemplate {
         return isAlgorithmRun;
     }
 
-    public RandomClassifier getRandomClassifier(){
-        return randomClassifier;
-    }
+//    public RandomClassifier getRandomClassifier(){
+//        return randomClassifier;
+//    }
 
     public Thread getThread2(){
         return thread2;

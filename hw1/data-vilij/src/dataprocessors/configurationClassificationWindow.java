@@ -69,7 +69,7 @@ public class configurationClassificationWindow {
         Scene stageScene = new Scene(hBox, 500, 300);
         configStage.setScene(stageScene);
         setActions();
-        configStage.show();
+        configStage.showAndWait();
     }
 
     public void setActions(){

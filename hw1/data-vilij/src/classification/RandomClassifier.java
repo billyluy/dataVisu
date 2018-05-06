@@ -119,6 +119,7 @@ public class RandomClassifier extends Classifier {
             }
         }
         while(count< maxIterations && !tocontinue()) {
+            System.out.println("not continue");
             int xCoefficient = new Long(-1 * Math.round((2 * RAND.nextDouble() - 1) * 10)).intValue();
             int yCoefficient = 10;
             int constant = RAND.nextInt(11);
@@ -137,6 +138,8 @@ public class RandomClassifier extends Classifier {
                     @Override
                     public void run() {
                         ((AppUI)applicationTemplate.getUIComponent()).getChart().getData().remove(((AppData) applicationTemplate.getDataComponent()).getseries2());
+                        ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setDisable(true);
+                        ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                     }
                 });
                 Platform.runLater(new Runnable() {
@@ -150,13 +153,6 @@ public class RandomClassifier extends Classifier {
                 }
                 try {
                     Thread.sleep(2000);
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setDisable(true);
-                            ((AppUI) applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
-                        }
-                    });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -167,8 +163,8 @@ public class RandomClassifier extends Classifier {
                     }
                 });
                 try {
-                    synchronized (this){
-                        this.wait();
+                    synchronized (applicationTemplate.manager) {
+                        applicationTemplate.manager.wait();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

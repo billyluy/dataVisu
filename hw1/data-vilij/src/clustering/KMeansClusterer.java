@@ -121,8 +121,8 @@ public class KMeansClusterer extends Clusterer {
                     }
                 });
                 try {
-                    synchronized (this) {
-                        this.wait();
+                    synchronized (applicationTemplate.manager) {
+                        applicationTemplate.manager.wait();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

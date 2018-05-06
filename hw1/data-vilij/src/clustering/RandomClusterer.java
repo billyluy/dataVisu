@@ -46,7 +46,6 @@ public class RandomClusterer extends Clusterer{
     public boolean tocontinue() { return tocontinue.get(); }
 
     public synchronized void run() {
-
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -62,6 +61,7 @@ public class RandomClusterer extends Clusterer{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                        System.out.println("s");
                         ((AppData)applicationTemplate.getDataComponent()).updateLabels(dataset.getLabels());
                     }
                 });
@@ -74,6 +74,7 @@ public class RandomClusterer extends Clusterer{
         }
         while(count< maxIterations && !tocontinue()) {
             count++;
+            System.out.println("doing some shit");
             assignLabels();
             if (count % updateInterval == 0) {
                 Platform.runLater(new Runnable() {
@@ -105,8 +106,8 @@ public class RandomClusterer extends Clusterer{
                     }
                 });
                 try {
-                    synchronized (this) {
-                        this.wait();
+                    synchronized (applicationTemplate.manager) {
+                        applicationTemplate.manager.wait();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
