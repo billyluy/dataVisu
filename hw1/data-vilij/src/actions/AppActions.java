@@ -63,7 +63,7 @@ public final class AppActions implements ActionComponent {
         ((AppUI) applicationTemplate.getUIComponent()).getTb1().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb2().setSelected(false);
         ((AppUI) applicationTemplate.getUIComponent()).getTb1().setSelected(false);
-        ((AppUI) applicationTemplate.getUIComponent()).getRb1().setSelected(false);
+//        ((AppUI) applicationTemplate.getUIComponent()).getRb1().setSelected(false);
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithimTitle().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getAlgorithmListPaneH().setVisible(false);
         ((AppUI) applicationTemplate.getUIComponent()).getRunButton().setVisible(false);

@@ -127,6 +127,7 @@ public class RandomClusterer extends Clusterer {
                 ((AppUI)applicationTemplate.getUIComponent()).getScrnshotButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getSaveButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getLoadButton().setDisable(false);
+                ((AppUI)applicationTemplate.getUIComponent()).getNewButton().setDisable(false);
                 ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("Algorithm is done");
             }
         });

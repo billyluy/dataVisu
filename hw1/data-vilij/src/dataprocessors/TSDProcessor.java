@@ -163,6 +163,10 @@ public final class TSDProcessor {
         }
     }
 
+    public Map<String, String> getDataLabels(){
+        return dataLabels;
+    }
+
     public ArrayList<Integer> getErrorArray(){
         return errorArray;
     }

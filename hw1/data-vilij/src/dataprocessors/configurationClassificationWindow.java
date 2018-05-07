@@ -35,6 +35,16 @@ public class configurationClassificationWindow {
     private CheckBox continuousRunCheckBox;
     private Button buttonPressed;
 
+    public configurationClassificationWindow(int maxIterations, int updateInterval, boolean isContinuous){
+        this.maxIterations = maxIterations;
+        this.updateInterval = updateInterval;
+        this.isContinuous = isContinuous;
+    }
+
+    public configurationClassificationWindow(){
+
+    }
+
     public  void showConfig(Button bp, int maxInt, int upInt, boolean continuous){
         prevMaxIterations = maxInt;
         prevUpdateInterval = upInt;
@@ -70,6 +80,15 @@ public class configurationClassificationWindow {
         configStage.setScene(stageScene);
         setActions();
         configStage.showAndWait();
+    }
+
+    public void correctInput(){
+        if(maxIterations < 1){
+            maxIterations =1;
+        }
+        if(updateInterval < 1){
+            updateInterval = 1;
+        }
     }
 
     public void setActions(){
@@ -136,5 +155,17 @@ public class configurationClassificationWindow {
 
     public boolean getContinuous(){
         return isContinuous;
+    }
+
+    public void setMaxIterations(int maxIter){
+        this.maxIterations = maxIter;
+    }
+
+    public void setUpdateInterval(int upIter){
+        this.updateInterval = upIter;
+    }
+
+    public void setContinuous(Boolean contBool){
+        this.isContinuous = contBool;
     }
 }

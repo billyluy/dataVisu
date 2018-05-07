@@ -33,6 +33,31 @@ public class configurationClusteringWindow {
     private CheckBox continuousRunCheckBox;
     private Button buttonPressed;
 
+    public configurationClusteringWindow(int maxIterations, int updateInterval, int numLabel, boolean isContinuous){
+        this.maxIterations = maxIterations;
+        this.updateInterval = updateInterval;
+        this.numLabel = numLabel;
+        this.isContinuous = isContinuous;
+    }
+
+    public configurationClusteringWindow(){
+
+    }
+
+    public void correctInput(){
+        if(maxIterations < 1){
+            maxIterations =1;
+        }
+        if(updateInterval < 1){
+            updateInterval = 1;
+        }
+        if(numLabel<2){
+            numLabel = 2;
+        }
+        if(numLabel>4){
+            numLabel=4;
+        }
+    }
     public  void showConfig(Button bp, int maxInt, int upInt, int numLa, boolean continuous){
         prevMaxIterations = maxInt;
         prevUpdateInterval = upInt;

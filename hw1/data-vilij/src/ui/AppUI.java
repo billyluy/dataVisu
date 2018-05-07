@@ -1,6 +1,7 @@
 package ui;
 
 import actions.AppActions;
+import algorithms.Classifier;
 import classification.Algorithm;
 import data.DataSet;
 import dataprocessors.AppData;
@@ -56,13 +57,14 @@ public final class AppUI extends UITemplate {
     private VBox                         vPane;
     private HBox                         hPane;
     private HBox                         algorithmListPaneH;
-    private VBox                         algorithmListPaneV1;
+    private VBox                         clusteringPane;
+    private VBox                         classificationPane;
+    private VBox                         algorithimPaneV;
     private VBox                         algorithmListPaneV2;
     private Text                         algorithmTitle;
     private ToggleButton                 tb1;
     private ToggleButton                 tb2;
-    private RadioButton                  rb1;
-    private RadioButton                  rb2;
+    private RadioButton                  selectedButtton;
     private Button                       cb1;
     private Button                       cb2;
     private Button                       runButton;
@@ -139,6 +141,42 @@ public final class AppUI extends UITemplate {
         textArea.clear();
     }
 
+    public void displayAlgorithmButtons(){
+        for(int i =0; i < listOfAlgors.size();i++){
+            try {
+                if(Class.forName(listOfAlgors.get(i)).getSuperclass().equals(Classifier.class)){
+                    RadioButton rb1= new RadioButton(listOfAlgors.get(i).replaceAll("algorithmTypes.",""));
+                    rb1.setToggleGroup(algorList);
+                    rb1.setOnAction(Event->{
+                        selectedButtton = rb1;
+                        if(isClusteringConfigedList[0]){
+                            runButton.setDisable(false);
+                        }
+                    });
+                    classificationPane.getChildren().add(rb1);
+                }else{
+                    RadioButton rb1 = new RadioButton(listOfAlgors.get(i).replaceAll("algorithmTypes.",""));
+                    rb1.setToggleGroup(algorList);
+                    rb1.setOnAction(Event->{
+                        selectedButtton = rb1;
+                        if(rb1.getText().equals("KMeansClusterer")){
+                            if(isClusteringConfigedList[0]){
+                                runButton.setDisable(false);
+                            }
+                        }else{
+                            if(isClusteringConfigedList[1]){
+                                runButton.setDisable(false);
+                            }
+                        }
+                    });
+                    clusteringPane.getChildren().add(rb1);
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void layout() {
         // TODO for homework 1
         listOfAlgors= new ArrayList<String>();
@@ -189,10 +227,10 @@ public final class AppUI extends UITemplate {
 
         algorList = new ToggleGroup();
 
-        rb1 = new RadioButton();
-        rb1.setToggleGroup(algorList);
-        rb2 = new RadioButton();
-        rb2.setToggleGroup(algorList);
+//        rb1 = new RadioButton();
+//        rb1.setToggleGroup(algorList);
+//        rb2 = new RadioButton();
+//        rb2.setToggleGroup(algorList);
 
         Image settingImage = new Image(manager.getPropertyValue(SETTING_PATH.name()),20,20,true,false);
         Image runImage = new Image(manager.getPropertyValue(RUN_PATH.name()),20,20,true,false);
@@ -207,17 +245,23 @@ public final class AppUI extends UITemplate {
         cb2 = new Button();
         cb2.setGraphic(new ImageView(settingImage));
 
-        algorithmListPaneV1 = new VBox();
-        algorithmListPaneV1.getChildren().add(rb1);
-        algorithmListPaneV1.getChildren().add(rb2);
-        algorithmListPaneV1.setSpacing(15);
+        clusteringPane = new VBox();
+        clusteringPane.setSpacing(15);
+
+        classificationPane = new VBox();
+        classificationPane.setSpacing(15);
+
+        displayAlgorithmButtons();
 
         algorithmListPaneV2 = new VBox();
         algorithmListPaneV2.getChildren().add(cb1);
         algorithmListPaneV2.getChildren().add(cb2);
 
         algorithmListPaneH = new HBox();
-        algorithmListPaneH.getChildren().add(algorithmListPaneV1);
+        algorithimPaneV = new VBox();
+        algorithimPaneV.getChildren().add(clusteringPane);
+        algorithimPaneV.getChildren().add(classificationPane);
+        algorithmListPaneH.getChildren().add(algorithimPaneV);
         algorithmListPaneH.getChildren().add(algorithmListPaneV2);
         algorithmListPaneH.setVisible(false);
         algorithmListPaneH.setSpacing(20);
@@ -286,13 +330,14 @@ public final class AppUI extends UITemplate {
                 ((AppData)applicationTemplate.getDataComponent()).getProcessor().clear();
                 inputDataText.setText("");
                 editToggle.setText(manager.getPropertyValue(DONE.name()));
-                rb1.setVisible(true);
+//                rb1.setVisible(true);
+                clusteringPane.setVisible(true);
                 tb1.setVisible(false);
                 tb2.setVisible(false);
                 algorithmTitle.setVisible(false);
                 algorithmListPaneH.setVisible(false);
                 runButton.setVisible(false);
-                rb1.setSelected(false);
+//                rb1.setSelected(false);
                 textArea.setDisable(false);
             }
         });
@@ -326,25 +371,29 @@ public final class AppUI extends UITemplate {
         });
         tb1.selectedProperty().addListener((observable, oldValue, newValue) -> {
             runButton.setVisible(true);
+            runButton.setDisable(true);
             algorithmListPaneH.setVisible(true);
+            if(algorithimPaneV.getChildren().contains(clusteringPane)){
+                algorithimPaneV.getChildren().remove(clusteringPane);
+            }
+            if(!algorithimPaneV.getChildren().contains(classificationPane)){
+                algorithimPaneV.getChildren().add(classificationPane);
+            }
             algorType = tb1;
-            rb1.setText("Random"+algorType.getText());
-            rb1.setSelected(false);
-            rb2.setText("rb2");
-            rb2.setSelected(false);
-            rb2.setVisible(false);
             cb2.setVisible(false);
             ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         });
         tb2.selectedProperty().addListener((observable, oldValue, newValue) -> {
             runButton.setVisible(true);
+            runButton.setDisable(true);
             algorithmListPaneH.setVisible(true);
+            if(!algorithimPaneV.getChildren().contains(clusteringPane)){
+                algorithimPaneV.getChildren().add(clusteringPane);
+            }
+            if(algorithimPaneV.getChildren().contains(classificationPane)){
+                algorithimPaneV.getChildren().remove(classificationPane);
+            }
             algorType = tb2;
-            rb1.setText("Random"+algorType.getText());
-            rb1.setSelected(false);
-            rb2.setText("rb2");
-            rb2.setSelected(false);
-            rb2.setVisible(true);
             cb2.setVisible(true);
             ((AppUI)applicationTemplate.getUIComponent()).getAlgorCount().setText("");
         });
@@ -360,7 +409,7 @@ public final class AppUI extends UITemplate {
                 if(configWindow != (null)){
                     classificationList[0] = configWindow;
                 }
-                if(rb1.isSelected()){
+                if(selectedButtton.getText().equals("RandomClassifier")){
                     runButton.setDisable(false);
                 }
             }else if(algorType.equals(tb2)){
@@ -373,9 +422,6 @@ public final class AppUI extends UITemplate {
                 }
                 if(configWindow != (null)){
                     clusteringList[0] = configWindow;
-                }
-                if(rb1.isSelected()){
-                    runButton.setDisable(false);
                 }
             }
         });
@@ -391,9 +437,6 @@ public final class AppUI extends UITemplate {
                 if(configWindow != (null)){
                     classificationList[1] = configWindow;
                 }
-                if(rb2.isSelected()){
-                    runButton.setDisable(false);
-                }
             }else if(algorType.equals(tb2)){
                 configurationClusteringWindow configWindow = new configurationClusteringWindow();
                 if(!isClusteringConfigedList[1]){
@@ -405,15 +448,12 @@ public final class AppUI extends UITemplate {
                 if(configWindow != (null)){
                     clusteringList[1] = configWindow;
                 }
-                if(rb2.isSelected()){
-                    runButton.setDisable(false);
-                }
             }
         });
         algorList.selectedToggleProperty().addListener((ov, toggle, new_toggle) -> {
             try{
                 if(algorType.equals(tb1)){
-                    if(new_toggle.equals(rb1)&&classificationList[0]!=null){
+                    if(new_toggle.equals(selectedButtton)&&classificationList[0]!=null){
                         runButton.setDisable(false);
                     }
                     else{
@@ -421,7 +461,7 @@ public final class AppUI extends UITemplate {
                     }
                 }
                 if(algorType.equals(tb2)){
-                    if(new_toggle.equals(rb1)&&clusteringList[0]!=null){
+                    if(new_toggle.equals(selectedButtton)&&clusteringList[0]!=null){
                         runButton.setDisable(false);
                     }
                     else{
@@ -459,7 +499,29 @@ public final class AppUI extends UITemplate {
                     el.printStackTrace();
                 }
             }else if(algorType.equals(tb2)){
-                if(rb1.isSelected()) {
+                if(selectedButtton.getText().equals("KMeansClusterer")){
+                    try{
+                        dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
+                        if (!runStarted) {
+                            runStarted = true;
+                            isAlgorithmRun = true;
+                            runButton.setDisable(true);
+                            Class kMeanClass= Class.forName(listOfAlgors.get(0));
+                            Constructor kMeanConstructor = kMeanClass.getConstructors()[0];
+                            Algorithm kMeanAlgorithm = (Algorithm)(kMeanConstructor.newInstance(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous(),applicationTemplate));
+                            ((AppData) applicationTemplate.getDataComponent()).clear();
+                            String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
+                            ((AppData) applicationTemplate.getDataComponent()).loadData(s);
+                            new Thread(kMeanAlgorithm).start();
+                        }else{
+                            synchronized (applicationTemplate.manager){
+                                applicationTemplate.manager.notify();
+                            }
+                        }
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }else{
                     try{
                         dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
                         if (!runStarted) {
@@ -468,7 +530,7 @@ public final class AppUI extends UITemplate {
                             runButton.setDisable(true);
                             Class randomClusterer= Class.forName(listOfAlgors.get(2));
                             Constructor randomClustererConstructor = randomClusterer.getConstructors()[0];
-                            Algorithm RandomClustererAlgorithm = (Algorithm)(randomClustererConstructor.newInstance(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous(),applicationTemplate));
+                            Algorithm RandomClustererAlgorithm = (Algorithm)(randomClustererConstructor.newInstance(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous(),applicationTemplate));
                             thread2 = new Thread(RandomClustererAlgorithm);
                             ((AppData) applicationTemplate.getDataComponent()).clear();
                             String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
@@ -481,29 +543,6 @@ public final class AppUI extends UITemplate {
                         }
                     }catch(Exception el){
                         el.printStackTrace();
-                    }
-                }else{
-                    try{
-                        dataSet = dataSet.fromString(textArea.getText() + textArea2.getText());
-                        if (!runStarted) {
-                            runStarted = true;
-                            isAlgorithmRun = true;
-                            runButton.setDisable(true);
-                            Class kMeanClass= Class.forName(listOfAlgors.get(1));
-                            Constructor kMeanConstructor = kMeanClass.getConstructors()[0];
-                            Algorithm kMeanAlgorithm = (Algorithm)(kMeanConstructor.newInstance(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous(),applicationTemplate));
-                            thread2 = new Thread(kMeanAlgorithm);
-                            ((AppData) applicationTemplate.getDataComponent()).clear();
-                            String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
-                            ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-                            thread2.start();
-                        }else{
-                            synchronized (applicationTemplate.manager){
-                                applicationTemplate.manager.notify();
-                            }
-                        }
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
                     }
                 }
             }
@@ -519,71 +558,8 @@ public final class AppUI extends UITemplate {
             } else if (listOfFiles[i].isDirectory()) {
             }
         }
+        System.out.println(listOfAlgors.toString());
     }
-
-//    public void instantButton(){
-//        if(algorType.equals(tb1)){
-//            RandomClassifier randomClassifier = new RandomClassifier(dataSet,classificationList[0].getMaxIterations(),classificationList[0].getUpdateInterval(),classificationList[0].getContinuous());
-//            runButton.setOnAction(Event ->{
-//                if(!runStarted){
-//                    runStarted = true;
-//                    isAlgorithmRun = true;
-//                    runButton.setDisable(true);
-//                    thread2 = new Thread(randomClassifier);
-//                    randomClassifier.setApplicationTemplate(applicationTemplate);
-//                    ((AppData)applicationTemplate.getDataComponent()).clear();
-//                    String s = ((AppUI)applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI)applicationTemplate.getUIComponent()).getTextArea2().getText();
-//                    ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-//                    thread2.start();
-//                }else{
-//                    synchronized (randomClassifier){
-//                        randomClassifier.notify();
-//                    }
-//                }
-//            });
-//        }
-//        if(algorType.equals(tb2)){
-//            if(rb1.isSelected()) {
-//                RandomClusterer randomClusterer = new RandomClusterer(dataSet, clusteringList[0].getMaxIterations(), clusteringList[0].getUpdateInterval(), clusteringList[0].getNumLabel(), clusteringList[0].getContinuous());
-//                runButton.setOnAction(Event ->{
-//                    if (!runStarted) {
-//                        runStarted = true;
-//                        isAlgorithmRun = true;
-//                        runButton.setDisable(true);
-//                        thread2 = new Thread(randomClusterer);
-//                        randomClusterer.setApplicationTemplate(applicationTemplate);
-//                        ((AppData) applicationTemplate.getDataComponent()).clear();
-//                        String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
-//                        ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-//                        thread2.start();
-//                    }else{
-//                        synchronized (randomClusterer){
-//                            randomClusterer.notify();
-//                        }
-//                    }
-//                });
-//            }else{
-//                KMeansClusterer kMeansClusterer = new KMeansClusterer(dataSet, clusteringList[1].getMaxIterations(), clusteringList[1].getUpdateInterval(), clusteringList[1].getNumLabel(), clusteringList[1].getContinuous());
-//                runButton.setOnAction(Event -> {
-//                    if (!runStarted) {
-//                        runStarted = true;
-//                        isAlgorithmRun = true;
-//                        runButton.setDisable(true);
-//                        thread2 = new Thread(kMeansClusterer);
-//                        kMeansClusterer.setApplicationTemplate(applicationTemplate);
-//                        ((AppData) applicationTemplate.getDataComponent()).clear();
-//                        String s = ((AppUI) applicationTemplate.getUIComponent()).getTextArea().getText() + ((AppUI) applicationTemplate.getUIComponent()).getTextArea2().getText();
-//                        ((AppData) applicationTemplate.getDataComponent()).loadData(s);
-//                        thread2.start();
-//                    }else{
-//                        synchronized (kMeansClusterer){
-//                            kMeansClusterer.notify();
-//                        }
-//                    }
-//                });
-//            }
-//        }
-//    }
 
     public VBox getVPane() { return vPane;}
 
@@ -653,9 +629,17 @@ public final class AppUI extends UITemplate {
         return algorithmTitle;
     }
 
-    public RadioButton getRb1(){
-        return rb1;
+    public VBox getClusteringPane() {
+        return clusteringPane;
     }
+
+    public VBox getClassificationPane() {
+        return classificationPane;
+    }
+
+    //    public RadioButton getRb1(){
+//        return rb1;
+//    }
 
 //    public RadioButton getRb2(){
 //        return rb2;
